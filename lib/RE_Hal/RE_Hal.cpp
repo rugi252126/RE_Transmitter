@@ -1,8 +1,14 @@
-/*
- TODO: Add module description
- */
+/**
+    @file RE_hal.cpp
 
-//#include "RE_Rte.h"
+    @brief
+    The module contains the IO and ADC information.
+    It defines here the ports used for digital IO and analog reading.
+
+    @author Alfonso, Rudy Manalo
+    @version
+*/
+
 #include "RE_Hal.h"
 
 
@@ -14,7 +20,7 @@
 #define HAL_ADC_VOLTAGE_K                     A6
 #define HAL_ADC_POTENTIOMETER1_K              A7
 
-
+// Equivalent constant definition for digital input pins
 static const uint8_t halDI_ports[] = 
 {
      HAL_DI_SWITCH1_K
@@ -24,12 +30,14 @@ static const uint8_t halDI_ports[] =
     ,HAL_DI_MENU_SWITCH_K
 };
 
+// Equivalent constant definition for digital output pins
 static const uint8_t halDO_ports[] =
 {
      HAL_DO_LED_IND_K 
     ,HAL_DO_BUZZER_K
 };
 
+// Equivalent constant definition for analog pins
 static const uint8_t halADC_ports[] =
 {
      HAL_ADC_LEFT_JOYSTICK_FWD_BCKWRD_K
@@ -41,17 +49,15 @@ static const uint8_t halADC_ports[] =
 };
 
 
-/*
-
- */
+// CLASS CONSTRUCTORS
+// ---------------------------------------------------------------------------
 RE_Hal::RE_Hal()
 {
-
 }
 
-/*
- 
- */
+// PUBLIC METHODS
+// ---------------------------------------------------------------------------
+// Module initialization
 void RE_Hal::halF_init(void)
 {
     uint8_t idx=0u;
@@ -69,59 +75,57 @@ void RE_Hal::halF_init(void)
     }
 }
 
-/*
- 
- */
+// ---------------------------------------------------------------------------
+// Set digital output port state(HIGH or LOW)
 void RE_Hal::halF_setDO_State(digitalOut_et digitalOut_e, bool state_b)
 {
     // add assert?
     digitalWrite(halDO_ports[digitalOut_e],state_b);
 }
 
-/*
- 
- */
+// ---------------------------------------------------------------------------
+// Get digital input port state(HIGH or LOW)
 bool RE_Hal::halF_getDI_State(enum digitalIn_et digitalIn_e)
 {
     // add aasert?
     return(digitalRead(halDI_ports[digitalIn_e]));
 }
 
-/*
-
-*/
+// ---------------------------------------------------------------------------
+// Get 8-bit ADC data
 uint8_t RE_Hal::halF_getADC_8bit(enum adc_et adc_e)
 {
-    // adc_raw_16 contains 10-bit of ADC data. Shift to right twice to get the 8-bit form.
+    // Shift the original ADC data to get the equivalent 8-bit resolution data
     adc_data_s[adc_e].adc_8bit_u8 = (uint8_t)(adc_data_s[adc_e].adc_raw_16 >> HAL_TO_8BIT_ADC_K);
 
     return(adc_data_s[adc_e].adc_8bit_u8);
 }
 
-/*
-
- */
+// ---------------------------------------------------------------------------
+// Get 10-bit ADC data
 uint16_t RE_Hal::halF_getADC_10bit(enum adc_et adc_e)
 {
+    // Shift the original ADC data(if needed) to get the equivalent 10-bit resolution data
     adc_data_s[adc_e].adc_10bit_u16 = (adc_data_s[adc_e].adc_raw_16 >> HAL_TO_10BIT_ADC_K);
 
     return(adc_data_s[adc_e].adc_10bit_u16);
 }
 
-/*
- TODO: Define the cyclic time
- */
+// ---------------------------------------------------------------------------
+// Module cyclic function
 void RE_Hal::halF_cyclic(void)
 {
+    // Read all ADC data
     halLF_readADC();
 
+    // Update the RTE data
     halLF_updateRteData();
 }
 
 
-/*
-
- */
+// PRIVATE METHODS
+// ---------------------------------------------------------------------------
+// cyclically read all ADC data
 void RE_Hal::halLF_readADC(void)
 {
     uint8_t idx=0u;
@@ -132,8 +136,8 @@ void RE_Hal::halLF_readADC(void)
     }
 }
 
-/*
- */
+// ---------------------------------------------------------------------------
+// Cyclically update the RTE interfaces to make the information available on other modules
 void RE_Hal::halLF_updateRteData(void)
 {
     bool tmp_b;

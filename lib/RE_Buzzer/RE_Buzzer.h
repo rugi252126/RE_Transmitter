@@ -1,12 +1,37 @@
+/**
+     @file RE_Buzzer.h
+
+	 @brief
+	 This file implements the buzzer control.
+	 It reads the battery voltage status and do the evaluation.
+	 There are two low voltage thresholds(low and critical).
+	 At low voltage, the buzzer will produce beep beep sound.
+	 And at critical voltage level, the buzzer will beep continously.
+
+	 @author Alfonso, Rudy Manalo
+	 @version
+ */
+
 #ifndef RE_BUZZER_H_
 #define RE_BUZZER_H_
 
-#include "RE_Hal.h"
+#include "RE_Rte.h"
 
+/*!
+    @defined 
+    @abstract Defines the module cyclic time
+    @discussion This constant defines the time at which the module is called cyclically.
+    The time is in milli-second form.
+*/
 #define BUZZER_CYCLIC_TIME_K           200u                        // 200ms
+
+/*!
+    @defined 
+    @abstract Defines the time for low voltage buzzer control
+    @discussion This constant defines the time to control the buzzer sound and produce
+    beep-beep sound when battery voltage status is low.
+*/
 #define BUZZER_DELAY_TIME_K            (600u/BUZZER_CYCLIC_TIME_K) // 600ms
-//#define BUZZER_VOLTAGE_THRESHOLD1_K    750                         // equivalent to 7.5V
-//#define BUZZER_VOLTAGE_THRESHOLD2_K    720                         // equivalent to 7.2V
 
 
 class RE_Buzzer_cls
@@ -14,47 +39,57 @@ class RE_Buzzer_cls
 public:
 
     /*!
-	 */
+        @method
+        @abstract RE_Buzzer abstract constructor.
+        @discussion RE_Buzzer class abstract constructor needed to create the abstract base class.
+	*/
 	RE_Buzzer_cls();
 
-    /*
-     */
-    //void buzzerF_RTE_Read_Voltage(uint16_t volt_u16);
-
-    /*
-     */
-    //enum digitalPortState_et buzzerF_RTE_Write_State(void);    
-
-    /*
-     */
-    //enum voltage_status_et buzzerF_getVoltageStatus(void);
-
     /*!
-	 */
+        @function
+        @abstract Module initialization
+        @discussion It sets the initial state of the buzzer.
+
+        @param  none
+        @return none
+	*/
     void buzzerF_Init(void);	
 
     /*!
-	 */
+        @function
+        @abstract Module cylic task
+        @discussion This will be called cyclically at a given time.
+
+        @param  none
+        @return none
+	*/
     void buzzerF_Cyclic(void);	 
 
 protected:
-    bool    buzzer_status_b;
-    //enum    voltage_status_et   buzzer_voltage_status_e;
-    enum    digitalPortState_et buzzer_digitalPortState_e;
-    uint8_t buzzer_delay_u8;
-    //uint16_t RTE_Read_Voltage_u16;
+    // Internal buzzer variables to control the buzzer behavior
+    enum    digitalPortState_et buzzer_digitalPortState_e; // digital output port status(HIGH/LOW) of the buzzer
+    bool    buzzer_status_b;                               // status when battery voltage is in low condition
+    uint8_t buzzer_delay_u8;                               // time to toggle the buzzer output between HIGH to LOW and vice versa
 
 private:
-    /*!
-	 */
-	//void buzzerLF_getVoltage(void);
-	
 	/*!
-	 */
-	void buzzerLF_checkAction(void);	
+        @function
+        @abstract Controls buzzer behavior
+        @discussion Buzzer will be either set to OFF, beep-beep sound or continously ON.
+
+        @param  none
+        @return none
+	*/
+	void buzzerLF_checkBuzzerBehavior(void);	
 
 	/*!
-	 */
+        @function
+        @abstract Update RTE information
+        @discussion The information will be sent to RTE module and become available to other module(s).
+
+        @param  none
+        @return none
+	*/
 	void buzzerLF_updateRteData(void);    
 }; // class RE_Buzzer_cls
 

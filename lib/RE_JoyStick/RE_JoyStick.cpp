@@ -1,9 +1,17 @@
-/*
-Add description
+/**
+    @file RE_JoyStick.cpp
+
+	@brief
+	This implements the joystick control behavior.
+	It supports two modes, Mode1(right-hand throttle) and Mode2(default: left-hand throttle).
+	The read ADC value will be processed and converted into specific movements(forward, backward, left-turn, right-turn, etc..)
+	and also the equivalent pwm(in percentage form)
+    All read ADC will be stabilized first before being published to have more better and accurate control.
+
+	@author Alfonso, Rudy Manalo
+	@version
 */
 
-
-//#include "RE_Rte.h"
 #include "RE_JoyStick.h"
 
 
@@ -35,13 +43,26 @@ static const uint16_t joyStick_throttle_raw_data[JS_TOTAL_NUMBER_OF_PWM_ELEMENTS
 	,JS_RAW_DATA_TO_100_PERCENT_LIMIT_K
 };
 
-/*
- Default constructor
-*/
+// CLASS CONSTRUCTORS
+// ---------------------------------------------------------------------------
 RE_JoyStick_cls::RE_JoyStick_cls()
 {
-	// initialize the variables
-	#if 0
+}
+
+// ---------------------------------------------------------------------------
+// Set the controller mode during instance creation. Default mode is Mode2.
+RE_JoyStick_cls::RE_JoyStick_cls(enum mode_et setMode_e)
+{
+	mode_e = setMode_e;
+	// Update Rte interface
+	Rte_cls.Rte_Write_JoyStick_ControllerMode(mode_e); 		
+}
+
+// PUBLIC METHODS
+// ---------------------------------------------------------------------------
+// Module initialization	
+void RE_JoyStick_cls::joyStickF_init(void)
+{
 	mode_e = MODE2_E;
 	ctrl_fwd_bckwd_e = JS_OFF_E;
 	ctrl_left_right_e = JS_OFF_E;
@@ -55,91 +76,64 @@ RE_JoyStick_cls::RE_JoyStick_cls()
 	throttle_left_right_debounce_time_u8 = 0u;
 	ctrl_fwd_bckwd_debounce_time_u8 = 0u;
 	ctrl_left_right_debounce_time_u8 = 0u;
-	#endif
 }
 
-/*
- Set the controller mode during initialization.
- Default mode is Mode2
- */
-RE_JoyStick_cls::RE_JoyStick_cls(enum mode_et setMode_e)
-{
-	mode_e = setMode_e;
-	// Update Rte interface
-	Rte_cls.Rte_Write_JoyStick_ControllerMode(mode_e); 		
-}
-
-/*
- Function to check the controller mode.
- Mode1 or Mode2.
- Mode1 => Right throttle; Left controller
- Mode2 => Left throttle; Right control
- */
+// ---------------------------------------------------------------------------
+// Function to set the controller mode(mode1 or mode2).
 void RE_JoyStick_cls::joyStickF_setMode(enum mode_et setMode_e)
 {
     mode_e = setMode_e;
 }
 
-/*
- */
+// ---------------------------------------------------------------------------
+// Returns controller mode(mode1 or mode2).
 enum mode_et RE_JoyStick_cls::joyStickF_getMode(void)
 {
     return(mode_e);
 }
 
-/*
- Throttle increase or decrease
- */
+// ---------------------------------------------------------------------------
+// Returns throttle forward/backward data
 uint8_t RE_JoyStick_cls::joyStickF_getThrottleFwdBckwd(void)
 {
 	return(throttle_fwd_bckwd_u8);
 }
 
-/*
- not use in robot
- */
+// ---------------------------------------------------------------------------
+// Returns throttle left/right data
 uint8_t RE_JoyStick_cls::joyStickF_getThrottleLeftRight(void)
 {
 	return(throttle_left_right_u8);
 }
 
-/*
- Forward, backward or no movement
- */
+// ---------------------------------------------------------------------------
+// Returns forward, backward or no movement
 enum direction_et RE_JoyStick_cls::joyStickF_getControlFwdBckwd(void)
 {
 	return(ctrl_fwd_bckwd_e);
 }
 
-/*
- Left turn, Right turn or no movement
- */
+// ---------------------------------------------------------------------------
+// Returns left turn, Right turn or no movement
 enum direction_et RE_JoyStick_cls::joyStickF_getControlLeftRight(void)
 {
 	return(ctrl_left_right_e);
 }
 
-//void RE_JoyStick_cls::joyStickF_RTE_Read_10bit_ADC(enum adc_et adc_id_e, uint16_t adc_u16)
-//{
-//    RTE_Read_JoyStick_10bit_ADC_u16[adc_id_e] = adc_u16;
-//}
-
-/*
- */
+// ---------------------------------------------------------------------------
+// Cyclic function
 void RE_JoyStick_cls::joyStickF_Cyclic(void)
 {
+    // Get, check and process all joysticks
 	joyStickLF_getAllControlSticksStatus();
 	
-	// apply debounce time to stablize the data
+	// Apply debounce time to stablize the data
 	joyStickLF_stabilizeAllControlSticksStatus();
 }	
 
-/************************************************************************************/
-
-/*
- Convert raw data into equivalent Pwm value.
- The info. gather here is for the throttle.
- */
+// PRIVATE METHODS
+// ---------------------------------------------------------------------------
+// Convert raw data into equivalent pwm value
 uint8_t RE_JoyStick_cls::joyStickLF_checkEquivalentPwm(uint16_t pwm_u16)
 {
 	uint8_t idx;
@@ -148,6 +142,7 @@ uint8_t RE_JoyStick_cls::joyStickLF_checkEquivalentPwm(uint16_t pwm_u16)
 	pwm_u8 = JS_100_PERCENT_PWM_K;
 	for(idx=0u; idx < JS_TOTAL_NUMBER_OF_PWM_ELEMENTS_K; idx++)
 	{
+        // The data will be checked against all the limits based on the defined number of elements.
 		if(pwm_u16 < joyStick_throttle_raw_data[idx])
 		{
 			pwm_u8 = joyStick_throttle_pwm[idx];
@@ -162,20 +157,19 @@ uint8_t RE_JoyStick_cls::joyStickLF_checkEquivalentPwm(uint16_t pwm_u16)
 	return(pwm_u8);
 }
 
-/*
- Contains info. for -> forward/backward or left turn/right turn
- */
+// ---------------------------------------------------------------------------
+// Contains general information for forward/backward or left turn/right turn
 uint8_t RE_JoyStick_cls::joyStickLF_checkControlDirection(uint16_t pwm_u16)
 {
 	uint8_t direction_u8 = 0u;
 	
 	if(pwm_u16 < JS_CTRL_STICK_BCKWD_OR_TURN_RIGHT_LIMIT_K)
 	{
-		direction_u8 = 2u;
+		direction_u8 = JS_BCKWRD_OR_RIGHT_TURN_K; // backward or right turn
 	}
 	else if(pwm_u16 > JS_CTRL_STICK_FWD_OR_TURN_LEFT_LIMIT_K)
 	{
-		direction_u8 = 1u; // forward or turn left
+		direction_u8 = JS_FWRD_OR_LEFT_TURN_K;    // forward or left turn
 	}
 	else
 	{
@@ -185,9 +179,8 @@ uint8_t RE_JoyStick_cls::joyStickLF_checkControlDirection(uint16_t pwm_u16)
 	return(direction_u8);
 }
 
-/*
- Contains info. for -> forward/backward or left turn/right turn
- */
+// ---------------------------------------------------------------------------
+// Contains specific information for forward/backward or left turn/right turn
 enum direction_et RE_JoyStick_cls::joyStickLF_checkControlStick(uint8_t index_u8, uint16_t pwm_u16)
 {
 	uint8_t dir_u8;
@@ -195,15 +188,15 @@ enum direction_et RE_JoyStick_cls::joyStickLF_checkControlStick(uint8_t index_u8
 	
 	direction_e = JS_OFF_E;
 	
-	// arrangement would be -> 1.] forward/backwad; 2.] turn left/turn right
+	// arrangement would be: index_u8 = 0 -> forward/backwad; index_u8 = 1 -> turn left/turn right
     if(0u == index_u8)
 	{ // forward/backwad
 		dir_u8 = joyStickLF_checkControlDirection(pwm_u16);
-		if(1u == dir_u8)
+		if(JS_FWRD_OR_LEFT_TURN_K == dir_u8)
 		{
 			direction_e = JS_FORWARD_E;
 		}
-		else if(2u == dir_u8)
+		else if(JS_BCKWRD_OR_RIGHT_TURN_K == dir_u8)
 		{
 			direction_e = JS_BACKWARD_E;
 		}
@@ -213,7 +206,7 @@ enum direction_et RE_JoyStick_cls::joyStickLF_checkControlStick(uint8_t index_u8
 		}
 	}
 	else if(1u == index_u8)
-	{ // left/turn right
+	{ // left/right turn
 		dir_u8 = joyStickLF_checkControlDirection(pwm_u16);
 		if(1u == dir_u8)
 		{
@@ -237,8 +230,8 @@ enum direction_et RE_JoyStick_cls::joyStickLF_checkControlStick(uint8_t index_u8
 }
 
 
-/*
- */
+// ---------------------------------------------------------------------------
+// Get, check and process all joysticks
 void RE_JoyStick_cls::joyStickLF_getAllControlSticksStatus(void)
 {
 	uint8_t tmp_raw_dir_u8;
@@ -248,7 +241,7 @@ void RE_JoyStick_cls::joyStickLF_getAllControlSticksStatus(void)
 	
 	if(MODE2_E == mode_e)
 	{
-		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_LeftJoyStick_FwdBckwrd(); //RTE_Read_JoyStick_10bit_ADC_u16[HAL_ADC_LEFT_JOYSTICK_FWD_BCKWD_E]; // re_hal_cls.halF_getADC_10bit(HAL_ADC_LEFT_JOYSTICK_FWD_BCKWD_E);
+		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_LeftJoyStick_FwdBckwrd();
 		tmp_raw_dir_u8 = joyStickLF_checkEquivalentPwm(tmp_raw_data_u16);
 		if(raw_throttle_fwd_bckwd_u8 != tmp_raw_dir_u8)
 		{
@@ -256,7 +249,7 @@ void RE_JoyStick_cls::joyStickLF_getAllControlSticksStatus(void)
 			raw_throttle_fwd_bckwd_u8 = tmp_raw_dir_u8;
 		}else{/* no action */}
 			
-		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_LeftJoyStick_LeftRight(); //RTE_Read_JoyStick_10bit_ADC_u16[HAL_ADC_LEFT_JOYSTICK_LEFT_RIGHT_E]; // re_hal_cls.halF_getADC_10bit(HAL_ADC_LEFT_JOYSTICK_LEFT_RIGHT_E);
+		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_LeftJoyStick_LeftRight();
 		tmp_raw_dir_u8 = joyStickLF_checkEquivalentPwm(tmp_raw_data_u16);
 		if(raw_throttle_left_right_u8 != tmp_raw_dir_u8)
 		{
@@ -264,7 +257,7 @@ void RE_JoyStick_cls::joyStickLF_getAllControlSticksStatus(void)
 			raw_throttle_left_right_u8 = tmp_raw_dir_u8;
 		}else{/* no action */}
 			
-		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_RightJoyStick_FwdBckwrd(); //RTE_Read_JoyStick_10bit_ADC_u16[HAL_ADC_RIGHT_JOYSTICK_FWD_BCKWD_E]; // re_hal_cls.halF_getADC_10bit(HAL_ADC_RIGHT_JOYSTICK_FWD_BCKWD_E);
+		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_RightJoyStick_FwdBckwrd();
 		tmp_raw_dir_e = joyStickLF_checkControlStick(0u, tmp_raw_data_u16);
 		if(raw_ctrl_fwd_bckwd_e != tmp_raw_dir_e)
 		{
@@ -272,7 +265,7 @@ void RE_JoyStick_cls::joyStickLF_getAllControlSticksStatus(void)
 			raw_ctrl_fwd_bckwd_e = tmp_raw_dir_e;
 		}else{/* no action */}
 			
-		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_RightJoyStick_LeftRight(); //RTE_Read_JoyStick_10bit_ADC_u16[HAL_ADC_RIGHT_JOYSTICK_LEFT_RIGHT_E]; // re_hal_cls.halF_getADC_10bit(HAL_ADC_RIGHT_JOYSTICK_LEFT_RIGHT_E);
+		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_RightJoyStick_LeftRight();
 		tmp_raw_dir_e = joyStickLF_checkControlStick(1u, tmp_raw_data_u16);
 		if(raw_ctrl_left_right_e != tmp_raw_dir_e)
 		{
@@ -282,7 +275,7 @@ void RE_JoyStick_cls::joyStickLF_getAllControlSticksStatus(void)
 	}
 	else
 	{
-		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_RightJoyStick_FwdBckwrd(); //RTE_Read_JoyStick_10bit_ADC_u16[HAL_ADC_RIGHT_JOYSTICK_FWD_BCKWD_E]; // re_hal_cls.halF_getADC_10bit(HAL_ADC_RIGHT_JOYSTICK_FWD_BCKWD_E);
+		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_RightJoyStick_FwdBckwrd();
 		tmp_raw_dir_u8 = joyStickLF_checkEquivalentPwm(tmp_raw_data_u16);
 		if(raw_throttle_fwd_bckwd_u8 != tmp_raw_dir_u8)
 		{
@@ -290,7 +283,7 @@ void RE_JoyStick_cls::joyStickLF_getAllControlSticksStatus(void)
 			raw_throttle_fwd_bckwd_u8 = tmp_raw_dir_u8;
 		}else{/* no action */}
 			
-		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_RightJoyStick_LeftRight(); //RTE_Read_JoyStick_10bit_ADC_u16[HAL_ADC_RIGHT_JOYSTICK_LEFT_RIGHT_E]; // re_hal_cls.halF_getADC_10bit(HAL_ADC_RIGHT_JOYSTICK_LEFT_RIGHT_E);
+		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_RightJoyStick_LeftRight();
 		tmp_raw_dir_u8 = joyStickLF_checkEquivalentPwm(tmp_raw_data_u16);
 		if(raw_throttle_left_right_u8 != tmp_raw_dir_u8)
 		{
@@ -298,7 +291,7 @@ void RE_JoyStick_cls::joyStickLF_getAllControlSticksStatus(void)
 			raw_throttle_left_right_u8 = tmp_raw_dir_u8;
 		}else{/* no action */}
 			
-		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_LeftJoyStick_FwdBckwrd(); //RTE_Read_JoyStick_10bit_ADC_u16[HAL_ADC_LEFT_JOYSTICK_FWD_BCKWD_E]; // re_hal_cls.halF_getADC_10bit(HAL_ADC_LEFT_JOYSTICK_FWD_BCKWD_E);
+		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_LeftJoyStick_FwdBckwrd();
 		tmp_raw_dir_e = joyStickLF_checkControlStick(0u, tmp_raw_data_u16);
 		if(raw_ctrl_fwd_bckwd_e != tmp_raw_dir_e)
 		{
@@ -306,7 +299,7 @@ void RE_JoyStick_cls::joyStickLF_getAllControlSticksStatus(void)
 			raw_ctrl_fwd_bckwd_e = tmp_raw_dir_e;
 		}else{/* no action */}
 			
-		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_LeftJoyStick_LeftRight(); //RTE_Read_JoyStick_10bit_ADC_u16[HAL_ADC_LEFT_JOYSTICK_LEFT_RIGHT_E]; // re_hal_cls.halF_getADC_10bit(HAL_ADC_LEFT_JOYSTICK_LEFT_RIGHT_E);
+		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_LeftJoyStick_LeftRight();
 		tmp_raw_dir_e = joyStickLF_checkControlStick(1u, tmp_raw_data_u16);
 		if(raw_ctrl_left_right_e != tmp_raw_dir_e)
 		{
@@ -316,8 +309,8 @@ void RE_JoyStick_cls::joyStickLF_getAllControlSticksStatus(void)
 	}
 }
 
-/*
- */
+// ---------------------------------------------------------------------------
+// Stabilize the data and update RTE interfaces
 void RE_JoyStick_cls::joyStickLF_stabilizeAllControlSticksStatus(void)
 {
 	if(throttle_fwd_bckwd_debounce_time_u8 >= JS_THROTTLE_DEBOUNCE_TIME_K)
