@@ -20,13 +20,30 @@
 /*!
     @defined 
     @abstract Module macro definitions
-    @discussion Defines the cyclic time, debounce time to stabilize the switches data and
+    @discussion Defines the cyclic time, debounce time to stabilize the switches data and 
     maximum number of supported switches.
 */
 #define SWITCHIN_TASK_IN_MS_K                             200u                         // 200ms -> module cyclic time
 #define SWITCHIN_TOGGLE_PUSH_BUTTON_SWS_DEBOUNCE_TIME_K   (200u/SWITCHIN_TASK_IN_MS_K) // 200ms -> debounce time for other switches
 #define SWITCHIN_MENU_SWS_DEBOUNCE_TIME_K                 (200u/SWITCHIN_TASK_IN_MS_K) // 200ms -> debounce time for menu switch
-#define SWITCHIN_NUM_K                                    5u/*HAL_DI_MAX_E*/           // maximum number of supported switches
+#define SWITCHIN_NUM_K                                    5u                           // maximum number of supported switches
+
+/*!
+    @defined 
+    @abstract Digital input switches
+    @discussion Defines all digital input switches
+*/
+enum switchIn_et
+{
+     SWITCHIN_SWS1_E     = 0 // 0
+    ,SWITCHIN_SWS2_E     = 1 // 1
+    ,SWITCHIN_SWS3_E     = 2 // 2
+    ,SWITCHIN_SWS4_E     = 3 // 3
+    ,SWITCHIN_SWS_MAX_E  = 4 // 4
+    ,SWITCHIN_MENU_SWS_E = SWITCHIN_SWS_MAX_E // 4
+    ,SWITCHIN_MAX_K          // maximum number of supported switches
+};
+
 
 class RE_SwitchIn_cls
 {

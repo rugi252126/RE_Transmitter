@@ -18,17 +18,8 @@
     @version version/revision history ussually comes from the version control tool
 */
 
-#include "Arduino.h"
-#include "RE_Hal.h"
-#include "RE_Buzzer.h"
-#include "RE_VoltageMonitoring.h"
-#include "RE_JoyStick.h"
-#include "RE_Led.h"
-#include "RE_Transceiver.h"
-#include "RE_Potentiometer.h"
-#include "RE_SwitchIn.h"
-#include "RE_Menu.h"
-#include "RE_Lcd.h"
+#include "RE_Rte.h"
+
 
 //! Macros
 //#define MAIN_DEBUG_USED_   // define to debug using Serial monitor      
@@ -36,18 +27,8 @@
 #define MAIN_200MS_TASK_K               (1000u/MAIN_CYCLIC_TIME_FREQUENCY_K)
 
 
-//! Create object instances
-RE_Hal                   main_hal_cls;         // from "RE_Hal" module
-RE_Buzzer_cls            main_buzzer_cls;      // from "RE_Buzzer" module              
-RE_VoltageMonitoring_cls main_voltage_cls;     // from "RE_VoltageMonitoring" module   
-RE_JoyStick_cls          main_joystick_cls;    // from "RE_JoyStick" module            
-RE_Led_cls               main_led_cls;         // from "RE_Led" module                 
-RE_Transceiver_cls       main_transceiver_cls; // from "RE_Transceiver" module         
-RE_Poti_cls              main_poti_cls;        // from "RE_Potentiometer" module       
-RE_SwitchIn_cls          main_switchIn_cls;    // from "RE_SwitchIn" module            
-RE_Menu_cls              main_menu_cls;        // from "RE_Menu" module               
-RE_Lcd_cls               main_lcd_cls;         // from "RE_Lcd" module    
-RE_Rte_cls               Rte_cls;              // from :RE_Rte" module          
+//! Create object instance 
+RE_Rte_cls               Rte_cls;              // from "RE_Rte" module          
 
 //! global variable declarations
 static unsigned long main_previous_task_time_ul = 0u;
@@ -70,23 +51,14 @@ void setup() {
     Serial.begin(9600);
 #endif // #ifdef MAIN_DEBUG_USED_
 
-    // Initialize the IO ports.
-    main_hal_cls.halF_init(); 
+    // HW Initialization(e.g. IO ports)
+    Rte_cls.rteF_System_Init(HW_INIT_E);    
 
-    // Initialize buzzer module
-    main_buzzer_cls.buzzerF_Init();
+    // SW initialization
+    Rte_cls.rteF_System_Init(SW_INIT_E);
 
-    // Initialize JoyStick module
-    main_joystick_cls.joyStickF_init();
-
-    // Set the controller default mode
-    main_joystick_cls.joyStickF_setMode(MODE2_E);
-
-    // Initialize the NRFL401 transceiver
-    main_transceiver_cls.transceiverF_Init();
-
-    // Initialize the LCD display
-    main_lcd_cls.lcdF_Init();
+    // HW and SW initialization
+    Rte_cls.rteF_System_Init(HW_SW_INIT_E);      
 }
 
 /**
@@ -115,9 +87,12 @@ void loop() {
 */
 static void mainLF_prio_TASK(void)
 {//! Read and execute HAL related stuffs
-    main_hal_cls.halF_cyclic();
 
-    main_switchIn_cls.switchInF_Cyclic();
+    // HAL cyclic function
+    Rte_cls.rteF_RE_Hal_Cyclic();
+
+    // SwitchIn cyclic function
+    Rte_cls.rteF_RE_SwitchIn_Cyclic();
 }
 
 
@@ -132,26 +107,26 @@ static void main_sub_TASK(void)
     mainLF_prio_TASK();
 
     // Voltage monitoring cylic function
-    main_voltage_cls.voltageMonitoringF_Cyclic();
+    Rte_cls.rteF_RE_VoltageMonitoring_Cyclic();
 
     // Poti cylic function
-    main_poti_cls.potiF_Cyclic();
+    Rte_cls.rteF_RE_Potentiometer_Cyclic();
 
     // JoyStick cylic function
-    main_joystick_cls.joyStickF_Cyclic();
+    Rte_cls.rteF_RE_JoyStick_Cyclic();
 
     // Transceiver cylic function
-    main_transceiver_cls.transceiverF_Cyclic();
+    Rte_cls.rteF_RE_Transceiver_Cyclic();
 
     // Menu cylic function
-    main_menu_cls.menuF_Cyclic();
+    Rte_cls.rteF_RE_Menu_Cyclic();
 
     // LED cylic function
-    main_led_cls.ledF_Cyclic();
+    Rte_cls.rteF_RE_Led_Cyclic();
 
     // Buzzer cylic function
-    main_buzzer_cls.buzzerF_Cyclic();
+    Rte_cls.rteF_RE_Buzzer_Cyclic();
 
     // LCD cylic function
-    main_lcd_cls.lcdF_Cyclic();
+    Rte_cls.rteF_RE_Lcd_Cyclic();
 }

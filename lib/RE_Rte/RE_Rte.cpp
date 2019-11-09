@@ -11,8 +11,31 @@
 */
 
 #include "RE_Rte.h"
+#include "RE_Hal.h"
+#include "RE_Transceiver.h"
+#include "RE_Lcd.h"
+#include "RE_Buzzer.h"
+#include "RE_VoltageMonitoring.h"
+#include "RE_JoyStick.h"
+#include "RE_Led.h"
+#include "RE_Potentiometer.h"
+#include "RE_SwitchIn.h"
+#include "RE_Menu.h"
 
 
+//! Create object instances
+RE_Hal                   rte_hal_cls;          // from "RE_Hal" module
+RE_Transceiver_cls       rte_transceiver_cls;  // from "RE_Transceiver" module
+RE_Lcd_cls               rte_lcd_cls;          // from "RE_Lcd" module    
+RE_Buzzer_cls            rte_buzzer_cls;       // from "RE_Buzzer" module              
+RE_VoltageMonitoring_cls rte_voltage_cls;      // from "RE_VoltageMonitoring" module   
+RE_JoyStick_cls          rte_joystick_cls;     // from "RE_JoyStick" module            
+RE_Led_cls               rte_led_cls;          // from "RE_Led" module                 
+RE_Poti_cls              rte_poti_cls;         // from "RE_Potentiometer" module       
+RE_SwitchIn_cls          rte_switchIn_cls;     // from "RE_SwitchIn" module            
+RE_Menu_cls              rte_menu_cls;         // from "RE_Menu" module               
+
+  
 // CLASS CONSTRUCTORS
 // ---------------------------------------------------------------------------
 RE_Rte_cls::RE_Rte_cls()
@@ -22,6 +45,112 @@ RE_Rte_cls::RE_Rte_cls()
 // ---------------------------------Rte Read----------------------------------
 
 // PUBLIC METHODS
+// ---------------------------------------------------------------------------
+// System initialization
+void RE_Rte_cls::rteF_System_Init(enum system_init_et init_e)
+{
+    switch(init_e)
+    {
+        case HW_INIT_E:
+        {
+            rte_hal_cls.halF_init();
+            break;
+        }
+        case HW_SW_INIT_E:
+        {
+            rte_transceiver_cls.transceiverF_Init();
+            rte_lcd_cls.lcdF_Init();
+            break;
+        }
+        case SW_INIT_E:
+        {
+            rte_buzzer_cls.buzzerF_Init();
+            rte_voltage_cls.voltageMonitoringF_Init();
+            rte_joystick_cls.joyStickF_init();
+            rte_led_cls.ledF_Init();
+            rte_poti_cls.potiF_Init();
+            rte_switchIn_cls.switchInF_Init();
+            rte_menu_cls.menuF_Init();
+            break;
+        }
+        default:
+        {
+            // no action
+            break;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// RE_HAL cyclic
+void RE_Rte_cls::rteF_RE_Hal_Cyclic(void)
+{
+    rte_hal_cls.halF_cyclic();    
+}
+
+// ---------------------------------------------------------------------------
+// RE_Transceiver cyclic
+void RE_Rte_cls::rteF_RE_Transceiver_Cyclic(void)
+{
+    rte_transceiver_cls.transceiverF_Cyclic();
+}
+
+// ---------------------------------------------------------------------------
+// RE_Lcd cyclic
+void RE_Rte_cls::rteF_RE_Lcd_Cyclic(void)
+{
+    rte_lcd_cls.lcdF_Cyclic();
+}
+
+// ---------------------------------------------------------------------------
+// RE_Buzzer cyclic
+void RE_Rte_cls::rteF_RE_Buzzer_Cyclic(void)
+{
+    rte_buzzer_cls.buzzerF_Cyclic();
+}
+
+// ---------------------------------------------------------------------------
+// RE_VoltageMonitoring cyclic
+void RE_Rte_cls::rteF_RE_VoltageMonitoring_Cyclic(void)
+{
+    rte_voltage_cls.voltageMonitoringF_Cyclic();
+}
+
+// ---------------------------------------------------------------------------
+// RE_JoyStick cyclic
+void RE_Rte_cls::rteF_RE_JoyStick_Cyclic(void)
+{
+    rte_joystick_cls.joyStickF_Cyclic();
+}
+
+// ---------------------------------------------------------------------------
+// RE_Led cyclic
+void RE_Rte_cls::rteF_RE_Led_Cyclic(void)
+{
+    rte_led_cls.ledF_Cyclic();
+}
+
+// ---------------------------------------------------------------------------
+// RE_Potentiometer cyclic
+void RE_Rte_cls::rteF_RE_Potentiometer_Cyclic(void)
+{
+    rte_poti_cls.potiF_Cyclic();
+}
+
+// ---------------------------------------------------------------------------
+// RE_SwitchIn cyclic
+void RE_Rte_cls::rteF_RE_SwitchIn_Cyclic(void)
+{
+    rte_switchIn_cls.switchInF_Cyclic();
+}
+
+// ---------------------------------------------------------------------------
+// RE_Menu cyclic
+void RE_Rte_cls::rteF_RE_Menu_Cyclic(void)
+{
+    rte_menu_cls.menuF_Cyclic();
+}
+
 // ---------------------------------------------------------------------------
 uint16_t RE_Rte_cls::Rte_Read_VoltageMonitoring_VoltageInDigit(void)
 {

@@ -110,10 +110,10 @@ void RE_SwitchIn_cls::switchInLF_stabilizeSwitchStatus(uint8_t idx)
 {
     switch(idx)
     {
-        case HAL_DI_SWITCH1_E:
-        case HAL_DI_SWITCH2_E:
-        case HAL_DI_SWITCH3_E:
-        case HAL_DI_SWITCH4_E:
+        case SWITCHIN_SWS1_E:
+        case SWITCHIN_SWS2_E:
+        case SWITCHIN_SWS3_E:
+        case SWITCHIN_SWS4_E:
         {
             if(switch_debounce_time_u16[idx] >= SWITCHIN_TOGGLE_PUSH_BUTTON_SWS_DEBOUNCE_TIME_K)
             {
@@ -126,7 +126,7 @@ void RE_SwitchIn_cls::switchInLF_stabilizeSwitchStatus(uint8_t idx)
             }
             break;
         }
-        case HAL_DI_MENU_SWITCH_E:
+        case SWITCHIN_MENU_SWS_E:
         {
             if(switch_debounce_time_u16[idx] >= SWITCHIN_MENU_SWS_DEBOUNCE_TIME_K)
             {

@@ -14,10 +14,6 @@
 #define RE_RTE_H_
 
 #include "Arduino.h"
-#include "RE_Hal.h"
-//#include "RE_VoltageMonitoring.h"
-//#include "RE_JoyStick.h"
-//#include "RE_Menu.h"
 
 
 /*!
@@ -96,17 +92,148 @@ enum browse_menu_et
     ,MENU_DISPLAY_MAX_E
 };
 
+/*!
+    @defined 
+    @abstract System initialization
+    @discussion Defines system initialization category
+*/
+enum system_init_et
+{
+     HW_INIT_E     = 0  // hardware related initialization
+    ,HW_SW_INIT_E       // hardware and software related initialization
+    ,SW_INIT_E          // software related initialization
+};
 
 class RE_Rte_cls
 {
 public:
 
-	/*!
+    /*!
         @method
         @abstract RE_Rte abstract constructor
         @discussion RE_Rte class abstract constructor needed to create the abstract base class.
 	*/
     RE_Rte_cls();
+
+	/*!
+        @function
+        @abstract System initialization
+        @discussion System initialization
+
+        @param  init_e {[see enum system_init_et] init category}
+        @return none
+	*/
+    void rteF_System_Init(enum system_init_et init_e);
+
+	/*!
+        @function
+        @abstract RE_Hal cyclic function
+        @discussion Called in fixed time interval cyclically
+
+        @param  none
+        @return none
+	*/
+    void rteF_RE_Hal_Cyclic(void);    
+
+	/*!
+        @function
+        @abstract RE_Transceiver cyclic function
+        @discussion Called in fixed time interval cyclically
+
+        @param  none
+        @return none
+	*/
+    void rteF_RE_Transceiver_Cyclic(void); 
+
+	/*!
+        @function
+        @abstract RE_Lcd cyclic function
+        @discussion Called in fixed time interval cyclically
+
+        @param  none
+        @return none
+	*/
+    void rteF_RE_Lcd_Cyclic(void);  
+
+	/*!
+        @function
+        @abstract RE_Buzzer cyclic function
+        @discussion Called in fixed time interval cyclically
+
+        @param  none
+        @return none
+	*/
+    void rteF_RE_Buzzer_Cyclic(void);             
+
+	/*!
+        @function
+        @abstract RE_VoltageMonitoring cyclic function
+        @discussion Called in fixed time interval cyclically
+
+        @param  none
+        @return none
+	*/
+    void rteF_RE_VoltageMonitoring_Cyclic(void); 
+
+	/*!
+        @function
+        @abstract RE_JotStick cyclic function
+        @discussion Called in fixed time interval cyclically
+
+        @param  none
+        @return none
+	*/
+    void rteF_RE_JoyStick_Cyclic(void);  
+
+	/*!
+        @function
+        @abstract RE_Led cyclic function
+        @discussion Called in fixed time interval cyclically
+
+        @param  none
+        @return none
+	*/
+    void rteF_RE_Led_Cyclic(void);      
+
+	/*!
+        @function
+        @abstract RE_Potentiometer cyclic function
+        @discussion Called in fixed time interval cyclically
+
+        @param  none
+        @return none
+	*/
+    void rteF_RE_Potentiometer_Cyclic(void);    
+
+	/*!
+        @function
+        @abstract RE_SwitchIn cyclic function
+        @discussion Called in fixed time interval cyclically
+
+        @param  none
+        @return none
+	*/
+    void rteF_RE_SwitchIn_Cyclic(void);       
+
+	/*!
+        @function
+        @abstract RE_Menu cyclic function
+        @discussion Called in fixed time interval cyclically
+
+        @param  none
+        @return none
+	*/
+    void rteF_RE_Menu_Cyclic(void);          
+
+    /*!
+        @function
+        @abstract Module cyclic function
+        @discussion Called in fixed time interval cyclically
+
+        @param  none
+        @return none
+	*/
+    //void rteF_Cyclic(void);    
 
     // ---------------------------------Rte Read----------------------------------
 
@@ -731,26 +858,6 @@ public:
         @return none
     */
     void Rte_Write_Menu_MainMenu(enum main_menu_et param_e);                                   
-
-	/*!
-        @function
-        @abstract Module initialization
-        @discussion Initialize local data and internal state into default
-
-        @param  none
-        @return none
-	*/
-    //void rteF_Init(void);
-
-    /*!
-        @function
-        @abstract Module cyclic function
-        @discussion Called in fixed time interval cyclically
-
-        @param  none
-        @return none
-	*/
-    //void rteF_Cyclic(void);
 
 protected:
 
