@@ -1,12 +1,20 @@
-/*
-Add description
+/**
+    @file RE_Potentiometer.cpp
+
+	@brief
+	This module handles the Poti implementation.
+	The data coming from Poti can be used to control the speed(e.g. motor) or brightness(e.g. Light).
+	It depends on the raw ADC value, the equivalent PWM will be known.
+
+	@author Alfonso, Rudy Manalo
+	@version
 */
 
 #include "RE_Potentiometer.h"
-#include "RE_Rte.h"
 
 
-static const uint8_t poti_pwm[POTI_TOTAL_NUMBER_OF_PWM_ELEMENTS_K] =
+// Poti pwm constant definition
+static const uint8_t POTI_PWM_u8[POTI_TOTAL_NUMBER_OF_PWM_ELEMENTS_K] =
 {
 	 POTI_10_PERCENT_PWM_K
 	,POTI_20_PERCENT_PWM_K
@@ -20,7 +28,8 @@ static const uint8_t poti_pwm[POTI_TOTAL_NUMBER_OF_PWM_ELEMENTS_K] =
 	,POTI_100_PERCENT_PWM_K
 };
 
-static const uint16_t poti_raw_data[POTI_TOTAL_NUMBER_OF_PWM_ELEMENTS_K] =
+// Poti ADC limits constant definition
+static const uint16_t POTI_RAW_DATA_u16[POTI_TOTAL_NUMBER_OF_PWM_ELEMENTS_K] =
 {
 	 POTI_RAW_DATA_TO_10_PERCENT_LIMIT_K
 	,POTI_RAW_DATA_TO_20_PERCENT_LIMIT_K
@@ -34,65 +43,49 @@ static const uint16_t poti_raw_data[POTI_TOTAL_NUMBER_OF_PWM_ELEMENTS_K] =
 	,POTI_RAW_DATA_TO_100_PERCENT_LIMIT_K
 };
 
-/* will use this for possible future upgrade */
-static const enum adc_et adc_id_e[POTI_TOTAL_NUMBER_K] = 
-{
-	HAL_ADC_POTENTIOMETER1_E
-};
 
-
-/*
- */
+// CLASS CONSTRUCTORS
+// ---------------------------------------------------------------------------
 RE_Poti_cls::RE_Poti_cls()
 {
-	#if 0
+}
+
+// PUBLIC METHODS
+// ---------------------------------------------------------------------------
+// Module initialization
+void RE_Poti_cls::potiF_Init(void)
+{
     uint8_t idx;
 	
-	for(idx=0u; idx < POTI_TOTAL_NUMBER_OF_PWM_ELEMENTS_K; idx++)
+	for(idx=0u; idx < POTI_TOTAL_NUMBER_K; idx++)
 	{
-		// initialize the variables
-	    poti_raw_data_u8[idx] = 0u;
-	    poti_data_u8[idx] = 0u;
+		// initialize into default value/state
+	    poti_raw_pwm_data_u8[idx]  = 0u;
+	    poti_pwm_data_u8[idx]      = 0u;
 	    poti_debounce_time_u8[idx] = 0u;
-	}
-	#endif
+	}	
 }
 
-/*
- */
-//void RE_Poti_cls::potiF_RTE_Read_10bit_ADC(uint8_t adc_id_u8, uint16_t adc_u16)
-//{
-    //RTE_Read_Poti_10bit_ADC_u16[adc_id_u8] = adc_u16;
-//}
-
-/*
- */
-uint8_t RE_Poti_cls::potiF_getValue(uint8_t idx) 
-{
-	return(poti_data_u8[idx]);
-}
- 
-/* 
- */
+// ---------------------------------------------------------------------------
+// Cyclic function
 void RE_Poti_cls::potiF_Cyclic(void)
 {
     uint8_t idx;
 	
 	for(idx=0u; idx < POTI_TOTAL_NUMBER_K; idx++)
 	{
-		potiLF_getAllPotiStatus(idx);
+        // check pwm status
+		potiLF_getAndCheckPotiPwm(idx);
 		
 		// apply debounce time to stabilize the data
-		potiLF_stabilizePotiStatus(idx);
+		potiLF_stabilizePotiPwm(idx);
 	}
 }	
 
-/*********************************************************************************/
-
-/*
- Convert raw data into equivalent Pwm value.
- */
-uint8_t RE_Poti_cls::potiLF_checkEquivalentPwm(uint16_t pwm_u16)
+// PRIVATE METHODS
+// ---------------------------------------------------------------------------
+// Convert raw data into equivalent pwm value
+uint8_t RE_Poti_cls::potiLF_checkEquivalentPwm(uint16_t adc_u16)
 {
 	uint8_t idx;
 	uint8_t pwm_u8;
@@ -100,72 +93,57 @@ uint8_t RE_Poti_cls::potiLF_checkEquivalentPwm(uint16_t pwm_u16)
 	pwm_u8 = POTI_100_PERCENT_PWM_K;
 	for(idx=0u; idx < POTI_TOTAL_NUMBER_OF_PWM_ELEMENTS_K; idx++)
 	{
-		if(pwm_u16 < poti_raw_data[idx])
+		if(adc_u16 < POTI_RAW_DATA_u16[idx])
 		{
-			pwm_u8 = poti_pwm[idx];
+			pwm_u8 = POTI_PWM_u8[idx];
 			break;
 		}
 		else
 		{
-			/* no action */
+			// no action
 		}
 	}
 	
 	return(pwm_u8);
 }	
 
-/*
- */
-void RE_Poti_cls::potiLF_getAllPotiStatus(uint8_t idx)
+// ---------------------------------------------------------------------------
+// Read the ADC value and check the pwm status
+void RE_Poti_cls::potiLF_getAndCheckPotiPwm(uint8_t idx)
 {
 	uint8_t  tmp_u8;
 	uint16_t tmp_u16;
-	//RE_Hal   poti_cls; // create an object from class RE_Hal
 	
-	
-	tmp_u16 = Rte_cls.Rte_Read_Hal_ADC_Potentiometer1(); //RTE_Read_Poti_10bit_ADC_u16[idx]; // poti_cls.halF_getADC_10bit(adc_id_e[idx]);
+	// read the ADC from Rte interface
+	tmp_u16 = Rte_cls.Rte_Read_Hal_ADC_Potentiometer1();
+    // check the equivalent pwm
 	tmp_u8  = potiLF_checkEquivalentPwm(tmp_u16);
-	if(tmp_u8 != poti_raw_data_u8[idx])
+    // check if pwm data is changed or not
+	if(tmp_u8 != poti_raw_pwm_data_u8[idx])
 	{
-		poti_debounce_time_u8[idx] = 0u; // reset debounce time because data has been changed.
-		poti_raw_data_u8[idx] = tmp_u8;
+		poti_debounce_time_u8[idx] = 0u;    // reset debounce time because pwm data is changed.
+		poti_raw_pwm_data_u8[idx] = tmp_u8; // stored the new pwm to buffer
 	}
 	else
 	{
-		/* no action */
+		// no action
 	}
 }
 
-/*
- */
-void RE_Poti_cls::potiLF_stabilizePotiStatus(uint8_t idx)
+// ---------------------------------------------------------------------------
+// Stabilize the pwm data
+void RE_Poti_cls::potiLF_stabilizePotiPwm(uint8_t idx)
 {
-    switch(adc_id_e[idx])
+    // Make sure the pwm data is the same until debounce time is elapsed.
+	if(poti_debounce_time_u8[idx] >= POTI_KNOB_DEBOUNCE_TIME_K)
 	{
-		case HAL_ADC_POTENTIOMETER1_E:
-		{
-			if(poti_debounce_time_u8[idx] >= POTI_KNOB_DEBOUNCE_TIME_K)
-			{
-				poti_data_u8[idx] = poti_raw_data_u8[idx];
-				if(0u == idx)
-				{
-				    Rte_cls.Rte_Write_Potentiometer_Poti1Data(poti_data_u8[0]);
-				}
-                else
-				{
-				    // for future update if need to add more potentiometer
-				}
-			}
-			else
-			{
-				poti_debounce_time_u8[idx]++;
-			}
-			break;
-		}
-		/* case ...*/
-		default:
-		{
-			break;
-		}
+        // pwm data is stable. It is safe to use.
+		poti_pwm_data_u8[idx] = poti_raw_pwm_data_u8[idx];
+        // Update Rte information as data is already stable.
+		Rte_cls.Rte_Write_Potentiometer_Poti1Data(poti_pwm_data_u8[idx]);
+	}
+	else
+	{
+		poti_debounce_time_u8[idx]++;
 	}
 }	

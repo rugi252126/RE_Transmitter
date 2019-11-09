@@ -1,48 +1,42 @@
-/*
- Add description
- */
- 
- 
-//#include "RE_Rte.h"
+/**
+    @file RE_VoltageMonitoring.cpp
+
+	@brief
+	This implements the battery voltage monitoring.
+	The battery voltage ADC value will be read and converted into voltage form.
+	The status will be cyclically checked to determine whether the battery is
+	still in normal voltage range, low voltage or critically low voltage.
+
+	@author Alfonso, Rudy Manalo
+	@version
+*/
+
 #include "RE_VoltageMonitoring.h"
+
  
-/*
- */ 
+// CLASS CONSTRUCTORS
+// ---------------------------------------------------------------------------
 RE_VoltageMonitoring_cls::RE_VoltageMonitoring_cls()
 {
-	
 }
 
-/*
- Return the calculated voltage. It will return the actual one(e.g. 7.5V)
- */
-float RE_VoltageMonitoring_cls::voltageMonitoringF_getActualVoltage(void)
+// PUBLIC METHODS
+// ---------------------------------------------------------------------------
+// Module initialization
+void RE_VoltageMonitoring_cls::voltageMonitoringF_Init(void)
 {
-    return(ad_voltage_f);
-}	
+    // initialize into default value/state
+    filter_time_u8       = 0u;
+    ad_voltage_f         = 0;
+	ad_voltage_u16       = 0u;
+	voltage_status_e     = VOLT_NORMAL_E; 
+	voltage_status_buf_e = VOLT_NORMAL_E;
+}
 
-/*
- Return the calculated voltage. It will return in digit(e.g. 7.5V -> 750 in digit)
- */
-uint16_t RE_VoltageMonitoring_cls::voltageMonitoringF_getVoltageInDigit(void)
-{
-    return(ad_voltage_u16);
-}	
-
-/*
- */
-//void RE_VoltageMonitoring_cls::voltageMonitoringF_RTE_Read_10bit_ADC(uint16_t adc_u16)
-//{
-//    RTE_Read_ad_voltage_f = adc_u16;
-//}
-
-/*
- */
+// ---------------------------------------------------------------------------
+// Cyclic function
 void RE_VoltageMonitoring_cls::voltageMonitoringF_Cyclic(void) 
 {
-	// get voltage raw AD
-	//voltageMonitoringLF_getVoltageRawAD();
-	
 	// calculate voltage
 	voltageMonitoringLF_calculateVoltage();
 
@@ -50,65 +44,67 @@ void RE_VoltageMonitoring_cls::voltageMonitoringF_Cyclic(void)
 	voltageMonitoringLF_checkVoltageStatus();
 
 	// apply voltage error filtering
-	voltageMonitoringLF_applyVoltageErrorFiltering();
+	voltageMonitoringLF_applyVoltageStateFiltering();
 
 	// update RTE data
 	voltageMonitoringLF_updateRteData();
 }
 
-
-/*
- */
-////void RE_VoltageMonitoring_cls::voltageMonitoringLF_getVoltageRawAD(void)
-//{
-//}
-
-/*
- */
+// ---------------------------------------------------------------------------
+// Calculate the actual battery voltage
 void RE_VoltageMonitoring_cls::voltageMonitoringLF_calculateVoltage(void)
 {
 	float tmp_f;
 
+    // get battery voltage raw ADC value
 	tmp_f = Rte_cls.Rte_Read_Hal_ADC_VoltageReading();
+    
 	tmp_f = tmp_f/VOLT_MONITOR_DIVISOR_K;
 
-	ad_voltage_u16 = (uint16_t)(tmp_f * VOLT_MONITOR_RESOLUTION_K); // This will give a value in digit form with 2 decimal places(e.g. 7.5V -> 750)
+    // This will give a value in digit form with 2 decimal places(e.g. 7.5V -> 750)
+	ad_voltage_u16 = (uint16_t)(tmp_f * VOLT_MONITOR_RESOLUTION_K);
 
+    // actual voltage
 	ad_voltage_f = tmp_f / VOLT_MONITOR_RESOLUTION_K;
 }
 
-/*
- */
+// ---------------------------------------------------------------------------
+// Check voltage status
 void RE_VoltageMonitoring_cls::voltageMonitoringLF_checkVoltageStatus(void)
 {
 	uint16_t tmp_u16;
     
 	tmp_u16 = ad_voltage_u16;
-	if(tmp_u16 <= VOLT_BUZZER_THRESHOLD1_K)
+	if(tmp_u16 <= VOLT_MONITOR_THRESHOLD2_K)
 	{ 
-		if(voltage_status_buf_e != VOLT_LOW_E)
-		{
-		    filter_time_u8 = 0u;
-		    voltage_status_buf_e = VOLT_LOW_E;
-		}
-	}
-	else if(tmp_u16 <= VOLT_BUZZER_THRESHOLD1_K)
-	{
 		if(voltage_status_buf_e != VOLT_LOW_CRITICAL_E)
 		{
+            // state is changed. reset the filter time.
 		    filter_time_u8 = 0u;
+            // voltage state is critically low.
 		    voltage_status_buf_e = VOLT_LOW_CRITICAL_E;
-		}		
+		}	        
+	}
+	else if(tmp_u16 <= VOLT_MONITOR_THRESHOLD1_K)
+	{
+		if(voltage_status_buf_e != VOLT_LOW_E)
+		{
+            // state is changed. reset the filter time.
+		    filter_time_u8 = 0u;
+            // voltage state is low.
+		    voltage_status_buf_e = VOLT_LOW_E;
+		}	
 	}
 	else
 	{
+        // voltage is normal.
 		voltage_status_buf_e = VOLT_NORMAL_E;
 	}
 }
 
-/*
- */
-void RE_VoltageMonitoring_cls::voltageMonitoringLF_applyVoltageErrorFiltering(void)
+// ---------------------------------------------------------------------------
+// Stabilize the voltage state
+void RE_VoltageMonitoring_cls::voltageMonitoringLF_applyVoltageStateFiltering(void)
 {
     switch(voltage_status_buf_e)
 	{
@@ -120,6 +116,7 @@ void RE_VoltageMonitoring_cls::voltageMonitoringLF_applyVoltageErrorFiltering(vo
 		    }
             else
 		    {
+                // voltage is in normal range.
 		    	voltage_status_e = VOLT_NORMAL_E;
 		    }		
 			break;
@@ -127,8 +124,9 @@ void RE_VoltageMonitoring_cls::voltageMonitoringLF_applyVoltageErrorFiltering(vo
 
 		case VOLT_LOW_E:
 		{
-		    if(filter_time_u8 >= VOLT_FILTER_TIME_IN_MS_K)
+		    if(filter_time_u8 >= VOLT_LOW_FILTER_TIME_IN_MS_K)
 		    {
+                // low voltage
 		        voltage_status_e = VOLT_LOW_E;
 		    }
 		    else
@@ -140,8 +138,9 @@ void RE_VoltageMonitoring_cls::voltageMonitoringLF_applyVoltageErrorFiltering(vo
 
 		case VOLT_LOW_CRITICAL_E:
 		{
-		    if(filter_time_u8 >= VOLT_FILTER_TIME_IN_MS_K)
+		    if(filter_time_u8 >= VOLT_LOW_FILTER_TIME_IN_MS_K)
 		    {
+                // critically low voltage
 		        voltage_status_e = VOLT_LOW_CRITICAL_E;
 		    }
 		    else
@@ -153,14 +152,14 @@ void RE_VoltageMonitoring_cls::voltageMonitoringLF_applyVoltageErrorFiltering(vo
 
 		default:
 		{
-			/* no action */
+			// no action
 			break;
 		}
 	}
 }
 
-/*
- */
+// ---------------------------------------------------------------------------
+// Update the Rte information with the latest and stable voltage status
 void RE_VoltageMonitoring_cls::voltageMonitoringLF_updateRteData(void)
 {
 	// update the voltage in digit

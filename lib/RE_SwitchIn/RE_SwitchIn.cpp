@@ -1,38 +1,44 @@
-/*
- TODO: Add description
- */
+/**
+    @file RE_SwitchIn.cpp
+
+    @brief
+    This implements the switches(e.g. push button, toggle) control in the controller.
+    Currently, the module only covered digital input switches. R-coded switches is not
+    yet covered in the module. It depends on the HW design, R-coded switches can also
+    be covered here.
+
+    @author Alfonso, Rudy Manalo
+    @version 
+*/
 
 #include "RE_SwitchIn.h"
-#include "RE_Rte.h"
 
 
-/*
-
- */
+// CLASS CONSTRUCTORS
+// ---------------------------------------------------------------------------
 RE_SwitchIn_cls::RE_SwitchIn_cls()
 {
-
 }
 
-/*
- */
-///void RE_SwitchIn_cls::switchInF_RTE_Read_State(enum digitalIn_et digitalIn_ID_e, bool state_b)
-//{
-   // RTE_Read_DI_switchState_e[digitalIn_ID_e] = state_b;
-//}
+// PUBLIC METHODS
+// ---------------------------------------------------------------------------
+// Module initialization
+void RE_SwitchIn_cls::switchInF_Init(void)
+{
+    uint8_t idx;
 
-/*
- 
- */
-//bool RE_SwitchIn_cls::switchInF_getSwitchState(enum digitalIn_et digitalIn_e)
-//{
-    // add an assert?
-//    return(switch_state_b[digitalIn_e]);
-//}
+    // initialize into default value/state
+    for(idx=0u; idx < SWITCHIN_NUM_K; idx++)
+    {
+        rte_read_switchState_b[idx]   = false;
+        switch_state_b[idx]           = false;
+        switch_state_raw_b[idx]       = false;
+        switch_debounce_time_u16[idx] = 0u;   
+    }
+}
 
-/* 
- 
- */
+// ---------------------------------------------------------------------------
+// Cyclic function
 void RE_SwitchIn_cls::switchInF_Cyclic(void)
 {
     uint8_t idx=0u;
@@ -40,7 +46,7 @@ void RE_SwitchIn_cls::switchInF_Cyclic(void)
     // Get Rte data
     switchInLF_getRteData();
 
-    for(idx=0u; idx < HAL_DI_MAX_E; idx++)
+    for(idx=0u; idx < SWITCHIN_NUM_K; idx++)
     {
         // first, get the switch state
         switchInLF_getSwitchStatus(idx);
@@ -53,37 +59,53 @@ void RE_SwitchIn_cls::switchInF_Cyclic(void)
     switchInLF_updateRteData();
 }
 
-/*******************************************************************************/
-
-/*
-
- */
+// PRIVATE METHODS
+// ---------------------------------------------------------------------------
+// Read hardware switch state from Rte
 void RE_SwitchIn_cls::switchInLF_getRteData(void)
 {
     #if (SWITCHIN_NUM_K > 0u)
-    read_switchState_b[0] = Rte_cls.Rte_Read_Hal_DI_Switch1();
+    rte_read_switchState_b[0] = Rte_cls.Rte_Read_Hal_DI_Switch1();
     #endif
 
     #if (SWITCHIN_NUM_K > 1u)
-    read_switchState_b[1] = Rte_cls.Rte_Read_Hal_DI_Switch2();
+    rte_read_switchState_b[1] = Rte_cls.Rte_Read_Hal_DI_Switch2();
     #endif
 
     #if (SWITCHIN_NUM_K > 2u)
-    read_switchState_b[2] = Rte_cls.Rte_Read_Hal_DI_Switch3();
+    rte_read_switchState_b[2] = Rte_cls.Rte_Read_Hal_DI_Switch3();
     #endif
 
     #if (SWITCHIN_NUM_K > 3u)
-    read_switchState_b[3] = Rte_cls.Rte_Read_Hal_DI_Switch4();
+    rte_read_switchState_b[3] = Rte_cls.Rte_Read_Hal_DI_Switch4();
     #endif
 
     #if (SWITCHIN_NUM_K > 4u)
-    read_switchState_b[4] = Rte_cls.Rte_Read_Hal_DI_MenuSwitch();
+    rte_read_switchState_b[4] = Rte_cls.Rte_Read_Hal_DI_MenuSwitch();
     #endif        
 }
 
-/*
+// ---------------------------------------------------------------------------
+// Check if switch state is changed
+void RE_SwitchIn_cls::switchInLF_getSwitchStatus(uint8_t idx)
+{
+    bool tmp_b;
 
- */
+    tmp_b = rte_read_switchState_b[idx]; 
+    if(tmp_b != switch_state_raw_b[idx])
+    {
+        switch_state_raw_b[idx] = tmp_b;    // switch state is changed.
+        switch_debounce_time_u16[idx] = 0u; // reset debounce time to stabilize the new state
+    }
+    else
+    {
+        // no action
+    }
+    
+}
+
+// ---------------------------------------------------------------------------
+// Stabilize the switch state
 void RE_SwitchIn_cls::switchInLF_stabilizeSwitchStatus(uint8_t idx)
 {
     switch(idx)
@@ -119,34 +141,14 @@ void RE_SwitchIn_cls::switchInLF_stabilizeSwitchStatus(uint8_t idx)
         }
         default:
         {
+            // no action
             break;
         }
     }
 }
 
-/*
-
- */
-void RE_SwitchIn_cls::switchInLF_getSwitchStatus(uint8_t idx)
-{
-    boolean tmp_b;
-    //RE_Hal hal_cls;
-
-    tmp_b = read_switchState_b[idx]; // hal_cls.halF_getDI_State((enum digitalIn_et)idx);
-    if(tmp_b != switch_state_raw_b[idx])
-    {
-        switch_state_raw_b[idx] = tmp_b;
-        switch_debounce_time_u16[idx] = 0u; // new switch state. reset debounce time to stabilize the state
-    }
-    else
-    {
-        /* no action */
-    }
-    
-}
-
-/*
- */
+// ---------------------------------------------------------------------------
+// Update the Rte information with the latest and stable switch state
 void RE_SwitchIn_cls::switchInLF_updateRteData(void)
 {
     #if (SWITCHIN_NUM_K > 0u)
