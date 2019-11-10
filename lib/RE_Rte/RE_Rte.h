@@ -35,8 +35,8 @@ enum voltage_status_et
 */
 enum digitalPortState_et
 {
-	 HAL_IO_LOW_E  = 0
-	,HAL_IO_HIGH_E = 1
+     HAL_IO_LOW_E  = 0
+    ,HAL_IO_HIGH_E = 1
 };
 
 /*!
@@ -46,8 +46,8 @@ enum digitalPortState_et
 */
 enum mode_et
 {
-	 MODE2_E = 0 // default mode. left hand throttle
-	,MODE1_E = 1
+     MODE2_E = 0 // default mode. left hand throttle
+    ,MODE1_E = 1
 };
 
 /*!
@@ -57,11 +57,11 @@ enum mode_et
 */
 enum direction_et
 {
-	 JS_OFF_E        = 0
-	,JS_FORWARD_E    = 1
-	,JS_BACKWARD_E   = 2
-	,JS_LEFT_TURN_E  = 3
-	,JS_RIGHT_TURN_E = 4
+     JS_OFF_E        = 0
+    ,JS_FORWARD_E    = 1
+    ,JS_BACKWARD_E   = 2
+    ,JS_LEFT_TURN_E  = 3
+    ,JS_RIGHT_TURN_E = 4
 };
 
 /*!
@@ -82,13 +82,13 @@ enum main_menu_et
 */
 enum browse_menu_et
 {
-     MENU_DISPLAY_GENERAL_INFO_E   = 0 // connection, controller mode
-    ,MENU_DISPLAY_VOLTAGE_INFO_E   = 1 // voltage and its status(normal, low voltage, critical low voltage)
-    ,MENU_DISPLAY_JOYSTICK_INFO_E  = 2 // throttle and control info
-    ,MENU_DISPLAY_SWITCH_INFO_E    = 3 // switch 1 to 4 info
-    ,MENU_DISPLAY_POTI_INFO_E      = 4 // potentiometer info
-    ,MENU_SW_HW_VERSION_E          = 5 // SW and HW Version. Format(YY/CW/PL) YY -> Year, CW -> Calendar Week, PL -> Path Level (e.g. 19/38/00)
-    ,MENU_DISPLAY_CONTROLLER_TYPE_E= 6 // robot, drone, plane, rc boat, rc car, etc..(default: robot)
+     MENU_DISPLAY_GENERAL_INFO_E        = 0 // connection, controller mode
+    ,MENU_DISPLAY_VOLTAGE_INFO_E        = 1 // voltage and its status(normal, low voltage, critical low voltage)
+    ,MENU_DISPLAY_JOYSTICK_INFO_E       = 2 // throttle and control info
+    ,MENU_DISPLAY_SWITCH_INFO_E         = 3 // switch 1 to 4 info
+    ,MENU_DISPLAY_POTI_INFO_E           = 4 // potentiometer info
+    ,MENU_DISPLAY_LOGISTIC_DATA_INFO_E  = 5 // SW and HW Version. Format(YY/CW/PL) YY -> Year, CW -> Calendar Week, PL -> Path Level (e.g. 19/38/00)
+    ,MENU_DISPLAY_CONTROLLED_OBJ_INFO_E = 6 // robot, drone, plane, rc boat, rc car, etc..(default: robot)
     ,MENU_DISPLAY_MAX_E
 };
 
@@ -112,117 +112,117 @@ public:
         @method
         @abstract RE_Rte abstract constructor
         @discussion RE_Rte class abstract constructor needed to create the abstract base class.
-	*/
+    */
     RE_Rte_cls();
 
-	/*!
+    /*!
         @function
         @abstract System initialization
         @discussion System initialization
 
         @param  init_e {[see enum system_init_et] init category}
         @return none
-	*/
+    */
     void rteF_System_Init(enum system_init_et init_e);
 
-	/*!
+    /*!
         @function
         @abstract RE_Hal cyclic function
         @discussion Called in fixed time interval cyclically
 
         @param  none
         @return none
-	*/
+    */
     void rteF_RE_Hal_Cyclic(void);    
 
-	/*!
+    /*!
         @function
         @abstract RE_Transceiver cyclic function
         @discussion Called in fixed time interval cyclically
 
         @param  none
         @return none
-	*/
+    */
     void rteF_RE_Transceiver_Cyclic(void); 
 
-	/*!
+    /*!
         @function
         @abstract RE_Lcd cyclic function
         @discussion Called in fixed time interval cyclically
 
         @param  none
         @return none
-	*/
+    */
     void rteF_RE_Lcd_Cyclic(void);  
 
-	/*!
+    /*!
         @function
         @abstract RE_Buzzer cyclic function
         @discussion Called in fixed time interval cyclically
 
         @param  none
         @return none
-	*/
+    */
     void rteF_RE_Buzzer_Cyclic(void);             
 
-	/*!
+    /*!
         @function
         @abstract RE_VoltageMonitoring cyclic function
         @discussion Called in fixed time interval cyclically
 
         @param  none
         @return none
-	*/
+    */
     void rteF_RE_VoltageMonitoring_Cyclic(void); 
 
-	/*!
+    /*!
         @function
         @abstract RE_JotStick cyclic function
         @discussion Called in fixed time interval cyclically
 
         @param  none
         @return none
-	*/
+    */
     void rteF_RE_JoyStick_Cyclic(void);  
 
-	/*!
+    /*!
         @function
         @abstract RE_Led cyclic function
         @discussion Called in fixed time interval cyclically
 
         @param  none
         @return none
-	*/
+    */
     void rteF_RE_Led_Cyclic(void);      
 
-	/*!
+    /*!
         @function
         @abstract RE_Potentiometer cyclic function
         @discussion Called in fixed time interval cyclically
 
         @param  none
         @return none
-	*/
+    */
     void rteF_RE_Potentiometer_Cyclic(void);    
 
-	/*!
+    /*!
         @function
         @abstract RE_SwitchIn cyclic function
         @discussion Called in fixed time interval cyclically
 
         @param  none
         @return none
-	*/
+    */
     void rteF_RE_SwitchIn_Cyclic(void);       
 
-	/*!
+    /*!
         @function
         @abstract RE_Menu cyclic function
         @discussion Called in fixed time interval cyclically
 
         @param  none
         @return none
-	*/
+    */
     void rteF_RE_Menu_Cyclic(void);          
 
     /*!

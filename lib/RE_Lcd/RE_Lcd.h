@@ -22,10 +22,12 @@
     @abstract Module macro definitions
     @discussion Defines the module cyclic time, LCD address and size of rows and columns.
 */
-#define LCD_CYCLIC_TIME_K         200u    // 200ms
-#define LCD_I2C_ADDRESS_K         0x27    // LDC I2C address
-#define LCD_NUM_OF_ROWS_K         4       // LCD number of rows
-#define LCD_NUM_OF_COLUMNS_K      20      // LCD number of columns
+#define LCD_CYCLIC_TIME_K             200u                         // 200ms
+#define LCD_I2C_ADDRESS_K             0x27                         // LDC I2C address
+#define LCD_NUM_OF_ROWS_K             4                            // LCD number of rows
+#define LCD_NUM_OF_COLUMNS_K          20                           // LCD number of columns
+#define LCD_NUM_DIGIT_CHECK_K         10u                          // LCD number of digit checks for some display info.
+#define LCD_DISPLAY_REFRESH_TIME_K    (1000u/LCD_CYCLIC_TIME_K)    // 1sec. time to refresh the display info. within the same state
 
 
 class RE_Lcd_cls
@@ -61,10 +63,81 @@ public:
     void lcdF_Cyclic(void);
 
 protected:
-
+    
+    uint8_t           diplay_refresh_time_u8; // time to refresh the display info. within the same state
     enum browse_menu_et   copy_browse_menu_e; // holds the browse menu current state
 
 private:
+
+    /*!
+        @function
+        @abstract Browse menu, general information
+        @discussion Displays general information
+
+        @param  none
+        @return none
+    */
+    void lcdLF_generalInfoDisplay(void);
+
+    /*!
+        @function
+        @abstract Browse menu, voltage information
+        @discussion Displays voltage information
+
+        @param  none
+        @return none
+    */
+    void lcdLF_voltageInfoDisplay(void);    
+
+    /*!
+        @function
+        @abstract Browse menu, joystick information
+        @discussion Displays joystick information
+
+        @param  none
+        @return none
+    */
+    void lcdLF_joyStickInfoDisplay(void);  
+
+    /*!
+        @function
+        @abstract Browse menu, switch information
+        @discussion Displays switch information
+
+        @param  none
+        @return none
+    */
+    void lcdLF_switchInfoDisplay(void);     
+
+    /*!
+        @function
+        @abstract Browse menu, potentiometer information
+        @discussion Displays potentiometer information
+
+        @param  none
+        @return none
+    */
+    void lcdLF_potiInfoDisplay(void);  
+
+    /*!
+        @function
+        @abstract Browse menu, logistic data information
+        @discussion Displays logistic data information
+
+        @param  none
+        @return none
+    */
+    void lcdLF_logisticDataInfoDisplay(void);   
+
+    /*!
+        @function
+        @abstract Browse menu, controlled object type information
+        @discussion Displays controlled object type information
+
+        @param  none
+        @return none
+    */
+    void lcdLF_controlledObjectInfoDisplay(void);                        
 
     /*!
         @function
@@ -84,7 +157,7 @@ private:
         @param  none
         @return none
     */
-    void lcdLF_mainMenuDisplay(void);
+    //void lcdLF_mainMenuDisplay(void);
 
 }; // class RE_Lcd_cls
 
