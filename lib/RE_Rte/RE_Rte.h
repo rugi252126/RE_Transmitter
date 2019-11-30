@@ -275,7 +275,7 @@ public:
         @param  none
         @return {[see enum digitalPortState_et] buzzer port control state}
     */
-    enum digitalPortState_et Rte_Read_Buzzer_PortState(void);   
+    //enum digitalPortState_et Rte_Read_Buzzer_PortState(void);   
 
     /*!
         @function
@@ -587,7 +587,7 @@ public:
         @param  param_e {[see enum digitalPortState_et] buzzer port control state}
         @return none
     */
-    void Rte_Write_Buzzer_PortState(enum digitalPortState_et  param_e);     
+    //void Rte_Write_Buzzer_PortState(enum digitalPortState_et  param_e);     
 
     /*!
         @function
@@ -886,7 +886,6 @@ protected:
     uint16_t                    Rte_ADC_Potentiometer1_u16;      
     float                       Rte_ActualVoltage_f;
     enum voltage_status_et      Rte_VoltageStatus_e;
-    enum digitalPortState_et    Rte_BuzzerDO_PortState_e;
     enum direction_et           Rte_JoyStick_ControlFwdBckwrd_e;
     enum direction_et           Rte_JoyStick_ControlLeftRight_e;
     enum mode_et                Rte_ControllerMode_e;

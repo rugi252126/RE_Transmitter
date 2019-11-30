@@ -106,5 +106,5 @@ void RE_Buzzer_cls::buzzerLF_checkBuzzerBehavior(void)
 void RE_Buzzer_cls::buzzerLF_updateRteData(void)
 {
     // Buzzer digital output port state(HIGH or LOW)
-    Rte_cls.Rte_Write_Buzzer_PortState(buzzer_digitalPortState_e);
+    Rte_cls.Rte_Write_Hal_DO_Buzzer((bool)buzzer_digitalPortState_e);
 }

@@ -170,12 +170,6 @@ enum voltage_status_et RE_Rte_cls::Rte_Read_VoltageMonitoring_VoltageStatus(void
 }    
 
 // ---------------------------------------------------------------------------
-enum digitalPortState_et RE_Rte_cls::Rte_Read_Buzzer_PortState(void) 
-{
-    return(Rte_BuzzerDO_PortState_e);
-}
-
-// ---------------------------------------------------------------------------
 uint16_t RE_Rte_cls::Rte_Read_Hal_ADC_LeftJoyStick_FwdBckwrd(void)
 {
     return(Rte_ADC_LeftJoyStick_FwdBckwrd_u16);
@@ -356,12 +350,6 @@ void RE_Rte_cls::Rte_Write_VoltageMonitoring_VoltageStatus(enum voltage_status_e
 {
     Rte_VoltageStatus_e = param_e;
 }  
-    
-// ---------------------------------------------------------------------------
-void RE_Rte_cls::Rte_Write_Buzzer_PortState(enum digitalPortState_et  param_e)
-{
-    Rte_BuzzerDO_PortState_e = param_e;
-}
 
 // ---------------------------------------------------------------------------
 void RE_Rte_cls::Rte_Write_Hal_ADC_LeftJoyStick_FwdBckwrd(uint16_t param_u16)
