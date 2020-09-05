@@ -104,7 +104,7 @@ enum system_init_et
     ,SW_INIT_E          // software related initialization
 };
 
-class RE_Rte_cls
+class Rte
 {
 public:
 
@@ -113,7 +113,7 @@ public:
         @abstract RE_Rte abstract constructor
         @discussion RE_Rte class abstract constructor needed to create the abstract base class.
     */
-    RE_Rte_cls();
+    Rte();
 
     /*!
         @function
@@ -861,42 +861,42 @@ public:
 
 protected:
 
-    bool                        Rte_DI_Switch1_b;
-    bool                        Rte_DI_Switch2_b;
-    bool                        Rte_DI_Switch3_b;
-    bool                        Rte_DI_Switch4_b;
-    bool                        Rte_DI_MenuSwitch_b;
-    bool                        Rte_DO_LedIndicator_b;
-    bool                        Rte_DO_Buzzer_b; 
-    bool                        Rte_Transceiver_Status_b;
-    bool                        Rte_SwitchIn_Switch1_b;   
-    bool                        Rte_SwitchIn_Switch2_b; 
-    bool                        Rte_SwitchIn_Switch3_b; 
-    bool                        Rte_SwitchIn_Switch4_b; 
-    bool                        Rte_SwitchIn_MenuSwitch_b;                   
-    uint8_t                     Rte_Potentiometer_Poti1Data_u8;
-    uint8_t                     Rte_JoyStick_ThrottleFwdBckwrd_u8;
-    uint8_t                     Rte_JoyStick_ThrottleLeftRight_u8;
-    uint16_t                    Rte_VoltageInDigit_u16;
-    uint16_t                    Rte_ADC_LeftJoyStick_FwdBckwrd_u16;
-    uint16_t                    Rte_ADC_LeftJoyStick_LeftRight_u16;
-    uint16_t                    Rte_ADC_RightJoyStick_FwdBckwrd_u16;
-    uint16_t                    Rte_ADC_RightJoyStick_LeftRight_u16;    
-    uint16_t                    Rte_ADC_VoltageReading_u16;
-    uint16_t                    Rte_ADC_Potentiometer1_u16;      
-    float                       Rte_ActualVoltage_f;
-    enum voltage_status_et      Rte_VoltageStatus_e;
-    enum direction_et           Rte_JoyStick_ControlFwdBckwrd_e;
-    enum direction_et           Rte_JoyStick_ControlLeftRight_e;
-    enum mode_et                Rte_ControllerMode_e;
-    enum browse_menu_et         Rte_BrowseMenu_e;
-    enum main_menu_et           Rte_MainMenu_e;
+    bool                        Rte_DI_Switch1_b_;
+    bool                        Rte_DI_Switch2_b_;
+    bool                        Rte_DI_Switch3_b_;
+    bool                        Rte_DI_Switch4_b_;
+    bool                        Rte_DI_MenuSwitch_b_;
+    bool                        Rte_DO_LedIndicator_b_;
+    bool                        Rte_DO_Buzzer_b_; 
+    bool                        Rte_Transceiver_Status_b_;
+    bool                        Rte_SwitchIn_Switch1_b_;   
+    bool                        Rte_SwitchIn_Switch2_b_; 
+    bool                        Rte_SwitchIn_Switch3_b_; 
+    bool                        Rte_SwitchIn_Switch4_b_; 
+    bool                        Rte_SwitchIn_MenuSwitch_b_;                   
+    uint8_t                     Rte_Potentiometer_Poti1Data_;
+    uint8_t                     Rte_JoyStick_ThrottleFwdBckwrd_;
+    uint8_t                     Rte_JoyStick_ThrottleLeftRight_;
+    uint16_t                    Rte_VoltageInDigit_;
+    uint16_t                    Rte_ADC_LeftJoyStick_FwdBckwrd_;
+    uint16_t                    Rte_ADC_LeftJoyStick_LeftRight_;
+    uint16_t                    Rte_ADC_RightJoyStick_FwdBckwrd_;
+    uint16_t                    Rte_ADC_RightJoyStick_LeftRight_;    
+    uint16_t                    Rte_ADC_VoltageReading_;
+    uint16_t                    Rte_ADC_Potentiometer1_;      
+    float                       Rte_ActualVoltage_f_;
+    enum voltage_status_et      Rte_VoltageStatus_e_;
+    enum direction_et           Rte_JoyStick_ControlFwdBckwrd_e_;
+    enum direction_et           Rte_JoyStick_ControlLeftRight_e_;
+    enum mode_et                Rte_ControllerMode_e_;
+    enum browse_menu_et         Rte_BrowseMenu_e_;
+    enum main_menu_et           Rte_MainMenu_e_;
     
 
 // private:
 
 };
 
-extern RE_Rte_cls    Rte_cls;
+extern Rte    rte_ivar;
 
 #endif // RE_RTE_H_

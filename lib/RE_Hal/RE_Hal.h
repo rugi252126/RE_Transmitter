@@ -47,12 +47,12 @@
 */
 enum digitalIn_et
 {
-     HAL_DI_SWITCH1_E     = 0 // 0
-    ,HAL_DI_SWITCH2_E     = 1 // 1
-    ,HAL_DI_SWITCH3_E     = 2 // 2
-    ,HAL_DI_SWITCH4_E     = 3 // 3
-    ,HAL_DI_SWITCH_MAX_E  = 4 // 4
-    ,HAL_DI_MENU_SWITCH_E = HAL_DI_SWITCH_MAX_E // 4
+     HAL_DI_SWITCH1_E
+    ,HAL_DI_SWITCH2_E
+    ,HAL_DI_SWITCH3_E
+    ,HAL_DI_SWITCH4_E
+    ,HAL_DI_SWITCH_MAX_E
+    ,HAL_DI_MENU_SWITCH_E = HAL_DI_SWITCH_MAX_E
     ,HAL_DI_MAX_E
 };
 
@@ -87,7 +87,7 @@ enum adc_et
 };
 
 
-class RE_Hal
+class Hal
 {
 public:
     
@@ -96,7 +96,7 @@ public:
         @abstract HAL(Hardware Abstraction Layer) contructor
         @discussion HAL class abstract constructor needed to create the base abstract class.
     */
-    RE_Hal( );
+    Hal();
 
     /*!
         @function
@@ -165,9 +165,9 @@ protected:
     // Internal variables to handle analog data.
     struct adc_data_st
     {
-        uint8_t  adc_8bit_u8;    // for 8-bit resolution 
-        uint16_t adc_10bit_u16;  // for 10-bt resolution
-        uint16_t adc_raw_16;     // data before converion to different resolution is applied.
+        uint8_t  adc_8bit_;    // for 8-bit resolution 
+        uint16_t adc_10bit_;   // for 10-bt resolution
+        uint16_t adc_raw_;     // data before converion to different resolution is applied.
     };
     struct adc_data_st adc_data_s[HAL_ADC_MAX_INDEX_E];
 

@@ -25,19 +25,19 @@
 */
 RF24 RE_radio(TRANSCEIVER_CE_K,TRANSCEIVER_CSN_K);
 
-const uint8_t TXRX_ADDRESS_u8[6] = "2RE5t";
+const uint8_t TXRX_ADDRESS[6] = "2RE5t";
 
 
-// CLASS CONSTRUCTORS
+// CLASS CONSTRUCTOR
 // ---------------------------------------------------------------------------
-RE_Transceiver_cls::RE_Transceiver_cls()
+Transceiver::Transceiver()
 {
 }
 
 // PUBLIC METHODS
 // ---------------------------------------------------------------------------
 // Module initialization
-void RE_Transceiver_cls::transceiverF_Init(void)
+void Transceiver::transceiverF_Init(void)
 {
     // start radio
     RE_radio.begin();
@@ -52,18 +52,18 @@ void RE_Transceiver_cls::transceiverF_Init(void)
     
 
     // Open a writing and reading pipe on each radio, with opposite addresses
-    RE_radio.openWritingPipe(TXRX_ADDRESS_u8);
+    RE_radio.openWritingPipe(TXRX_ADDRESS);
 
     // Stop receiving anything
     RE_radio.stopListening();
 
     // set the connection status to NOK by default
-    txrx_status_b = false;
+    txrx_status_b_ = false;
 }
 
 // ---------------------------------------------------------------------------
 // Cyclic function
-void RE_Transceiver_cls::transceiverF_Cyclic(void)
+void Transceiver::transceiverF_Cyclic(void)
 {
     // First, collect the data to be transmitted.
     transceiverLF_collectData();
@@ -78,62 +78,62 @@ void RE_Transceiver_cls::transceiverF_Cyclic(void)
 // PRIVATE METHODS
 // ---------------------------------------------------------------------------
 // Collection of data from other modules via Rte
-void RE_Transceiver_cls::transceiverLF_collectData(void)
+void Transceiver::transceiverLF_collectData(void)
 {
-    tx_data_s.joystick_throttle_fwd_bckwd_u8 = Rte_cls.Rte_Read_JoyStick_ThrottleFwdBckwrd();
+    tx_data_s.joystick_throttle_fwd_bckwd_ = rte_ivar.Rte_Read_JoyStick_ThrottleFwdBckwrd();
 
-    tx_data_s.joystick_throttle_left_right_u8 = Rte_cls.Rte_Read_JoyStick_ThrottleLeftRight();
+    tx_data_s.joystick_throttle_left_right_ = rte_ivar.Rte_Read_JoyStick_ThrottleLeftRight();
 
-    tx_data_s.joystick_ctrl_fwd_bckwd_u8 = (uint8_t)Rte_cls.Rte_Read_JoyStick_ControlFwdBckwrd();
+    tx_data_s.joystick_ctrl_fwd_bckwd_ = (uint8_t)rte_ivar.Rte_Read_JoyStick_ControlFwdBckwrd();
 
-    tx_data_s.joystick_ctrl_left_right_u8 = (uint8_t)Rte_cls.Rte_Read_JoyStick_ControlLeftRight();
+    tx_data_s.joystick_ctrl_left_right_ = (uint8_t)rte_ivar.Rte_Read_JoyStick_ControlLeftRight();
 
-    tx_data_s.potentiometer1_u8 = Rte_cls.Rte_Read_Potentiometer_Poti1Data();
+    tx_data_s.potentiometer1_ = rte_ivar.Rte_Read_Potentiometer_Poti1Data();
 
-    tx_data_s.switch1_u8 = Rte_cls.Rte_Read_Hal_DI_Switch1();
+    tx_data_s.switch1_ = rte_ivar.Rte_Read_Hal_DI_Switch1();
 
-    tx_data_s.switch2_u8 = Rte_cls.Rte_Read_Hal_DI_Switch2();
+    tx_data_s.switch2_ = rte_ivar.Rte_Read_Hal_DI_Switch2();
 
-    tx_data_s.switch3_u8 = Rte_cls.Rte_Read_Hal_DI_Switch3();
+    tx_data_s.switch3_ = rte_ivar.Rte_Read_Hal_DI_Switch3();
 
-    tx_data_s.switch4_u8 = Rte_cls.Rte_Read_Hal_DI_Switch4();
+    tx_data_s.switch4_ = rte_ivar.Rte_Read_Hal_DI_Switch4();
 }
 
 // ---------------------------------------------------------------------------
 // Increments radio timeout counter
-void RE_Transceiver_cls::transceiverLF_incrementTimeoutCounter(void)
+void Transceiver::transceiverLF_incrementTimeoutCounter(void)
 {
-    if(timeout_ctr_u8 >= TRANSCEIVER_TIMEOUT_K)
+    if(timeout_ctr_ >= TRANSCEIVER_TIMEOUT_K)
     {
         // radio connection is not okay.
-        txrx_status_b = false;
-        Rte_cls.Rte_Write_Transceiver_Status(txrx_status_b);
+        txrx_status_b_ = false;
+        rte_ivar.Rte_Write_Transceiver_Status(txrx_status_b_);
     }
     else
     {
-        timeout_ctr_u8++;
+        timeout_ctr_++;
     }
 }
 
 // ---------------------------------------------------------------------------
 // Decrements radio timeout counter
-void RE_Transceiver_cls::transceiverLF_decrementTimeoutCounter(void)
+void Transceiver::transceiverLF_decrementTimeoutCounter(void)
 {
-    if(0u == timeout_ctr_u8)
+    if(0u == timeout_ctr_)
     {
         // radio connection is okay.
-        txrx_status_b = true;
-        Rte_cls.Rte_Write_Transceiver_Status(txrx_status_b);
+        txrx_status_b_ = true;
+        rte_ivar.Rte_Write_Transceiver_Status(txrx_status_b_);
     }
     else
     {
-        timeout_ctr_u8--;
+        timeout_ctr_--;
     }
 }
 
 // ---------------------------------------------------------------------------
 // Sending of collected data to nRF24L01 library
-void RE_Transceiver_cls::transceiverLF_Send(void)
+void Transceiver::transceiverLF_Send(void)
 {
     // First, stop listening so we can talk.
     RE_radio.stopListening();   

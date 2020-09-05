@@ -30,7 +30,7 @@
 #define VOLT_MONITOR_THRESHOLD2_K     720                                // equivalent to 7.2V
 
 
-class RE_VoltageMonitoring_cls
+class VoltageMonitoring
 {
 public:
 
@@ -39,7 +39,7 @@ public:
         @abstract RE_VoltageMonitoring abstract constructor
         @discussion RE_VoltageMonitoring class abstract constructor needed to create the abstract base class.
 	*/
-	RE_VoltageMonitoring_cls();
+	VoltageMonitoring();
 	
 	/*!
         @function
@@ -63,11 +63,11 @@ public:
 
 protected:
 
-    uint8_t  filter_time_u8;                       // filter time to make sure the voltage state is stable
-    float    ad_voltage_f;                         // actual voltage value. mainly used for voltage display
-	uint16_t ad_voltage_u16;                       // voltage in decimal form. mainly used when comparing to low voltage thresholds
-	enum voltage_status_et  voltage_status_e;      // stable voltage state
-	enum voltage_status_et  voltage_status_buf_e;  // unstable voltage state
+    uint8_t  filter_time_;                          // filter time to make sure the voltage state is stable
+    float    ad_voltage_f_;                         // actual voltage value. mainly used for voltage display
+	uint16_t ad_voltage_;                           // voltage in decimal form. mainly used when comparing to low voltage thresholds
+	enum voltage_status_et  voltage_status_e_;      // stable voltage state
+	enum voltage_status_et  voltage_status_buf_e_;  // unstable voltage state
 
 private:
 
@@ -114,6 +114,6 @@ private:
         @return none
     */
     void voltageMonitoringLF_updateRteData(void);
-}; // class RE_VoltageMonitoring_cls
+}; // class VoltageMonitoring
 
 #endif // RE_VOLTAGEMONITORING_H_

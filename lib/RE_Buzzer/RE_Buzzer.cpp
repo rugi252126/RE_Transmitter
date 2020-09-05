@@ -14,24 +14,24 @@
  
 #include "RE_Buzzer.h"
 
-// CLASS CONSTRUCTORS
+// CLASS CONSTRUCTOR
 // ---------------------------------------------------------------------------
-RE_Buzzer_cls::RE_Buzzer_cls()
+Buzzer::Buzzer()
 {	
 }
 
 // PUBLIC METHODS
 // ---------------------------------------------------------------------------
 // Module initialization
-void RE_Buzzer_cls::buzzerF_Init(void)
+void Buzzer::buzzerF_Init(void)
 {
-    buzzer_digitalPortState_e = HAL_IO_LOW_E;
-    buzzer_delay_u8 = 0u;
-    buzzer_status_b = false;
+    buzzer_digitalPortState_e_ = HAL_IO_LOW_E;
+    buzzer_delay_ = 0u;
+    buzzer_status_b_ = false;
 }
 
 // Cyclic function
-void RE_Buzzer_cls::buzzerF_Cyclic(void)
+void Buzzer::buzzerF_Cyclic(void)
 {
     // Set buzzer according to the status of the battery voltage
     buzzerLF_checkBuzzerBehavior();
@@ -44,46 +44,46 @@ void RE_Buzzer_cls::buzzerF_Cyclic(void)
 // PRIVATE METHODS
 // ---------------------------------------------------------------------------
 // Controls the behavior of buzzer based on battery voltage status
-void RE_Buzzer_cls::buzzerLF_checkBuzzerBehavior(void)
+void Buzzer::buzzerLF_checkBuzzerBehavior(void)
 {
     enum voltage_status_et   volt_stat_e;
-    volt_stat_e = Rte_cls.Rte_Read_VoltageMonitoring_VoltageStatus();
+    volt_stat_e = rte_ivar.Rte_Read_VoltageMonitoring_VoltageStatus();
 
     switch(volt_stat_e)
     {
         case VOLT_NORMAL_E:
         {
             // Voltage is in normal state. Buzzer is OFF.
-            buzzer_digitalPortState_e = HAL_IO_LOW_E;
+            buzzer_digitalPortState_e_ = HAL_IO_LOW_E;
             break;
         }
         case VOLT_LOW_E:
         {
             // Voltage is in semi-critical state. Buzzer will switch-ON and OFF.
-            if (buzzer_status_b != false)
+            if (buzzer_status_b_ != false)
             {
-                if (buzzer_delay_u8 >= BUZZER_DELAY_TIME_K)
+                if (buzzer_delay_ >= BUZZER_DELAY_TIME_K)
                 {
-                    buzzer_status_b = false; // transition from Buzzer OFF to Buzzer ON.
-                    buzzer_delay_u8 = 0u; // reset the delay time
+                    buzzer_status_b_ = false; // transition from Buzzer OFF to Buzzer ON.
+                    buzzer_delay_ = 0u; // reset the delay time
                 }
                 else
                 {
-                    buzzer_delay_u8++;
-                    buzzer_digitalPortState_e = HAL_IO_LOW_E;
+                    buzzer_delay_++;
+                    buzzer_digitalPortState_e_ = HAL_IO_LOW_E;
                 }
             }			
             else
             {
-                if (buzzer_delay_u8 >= BUZZER_DELAY_TIME_K)
+                if (buzzer_delay_ >= BUZZER_DELAY_TIME_K)
                 {
-                    buzzer_status_b = true; // transition from Buzzer ON to Buzzer OFF.
-                    buzzer_delay_u8 = 0u; // reset the delay time
+                    buzzer_status_b_ = true; // transition from Buzzer ON to Buzzer OFF.
+                    buzzer_delay_ = 0u; // reset the delay time
                 }
                 else
                 {
-                    buzzer_delay_u8++;
-                    buzzer_digitalPortState_e = HAL_IO_HIGH_E;
+                    buzzer_delay_++;
+                    buzzer_digitalPortState_e_ = HAL_IO_HIGH_E;
                 }
             }			
             break;
@@ -91,7 +91,7 @@ void RE_Buzzer_cls::buzzerLF_checkBuzzerBehavior(void)
         case VOLT_LOW_CRITICAL_E:
         {
             // Voltage is in critical state. Buzzer will beep continously.
-            buzzer_digitalPortState_e = HAL_IO_HIGH_E;
+            buzzer_digitalPortState_e_ = HAL_IO_HIGH_E;
             break;
         }
         default:
@@ -103,8 +103,8 @@ void RE_Buzzer_cls::buzzerLF_checkBuzzerBehavior(void)
 
 // ---------------------------------------------------------------------------
 // Update the RTE interface
-void RE_Buzzer_cls::buzzerLF_updateRteData(void)
+void Buzzer::buzzerLF_updateRteData(void)
 {
     // Buzzer digital output port state(HIGH or LOW)
-    Rte_cls.Rte_Write_Hal_DO_Buzzer((bool)buzzer_digitalPortState_e);
+    rte_ivar.Rte_Write_Hal_DO_Buzzer((bool)buzzer_digitalPortState_e_);
 }

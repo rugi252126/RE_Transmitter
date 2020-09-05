@@ -58,23 +58,23 @@
 #define JS_BCKWRD_OR_RIGHT_TURN_K             2u
 
 
-class RE_JoyStick_cls
+class JoyStick
 {
 public:
     
 	/*!
         @method
-        @abstract RE_JoyStick abstract constructor
-        @discussion RE_JoyStick class abstract constructor needed to create the abstract base class.
+        @abstract JoyStick abstract constructor
+        @discussion JoyStick class abstract constructor needed to create the abstract base class.
 	 */
-	RE_JoyStick_cls();
+	JoyStick();
 	
 	/*!
         @method
         @abstract RE_JoyStick constructor
         @discussion RE_JoyStick class constructor with parameter that able to set the controller mode during instance creation.
 	 */
-	RE_JoyStick_cls(enum mode_et setMode_e); 
+	JoyStick(enum mode_et setMode_e); 
 
 	/*!
         @function
@@ -161,20 +161,19 @@ public:
 
 protected:
 
-    // joystick variables 
-	enum mode_et mode_e;                           // controller mode
-	enum direction_et ctrl_fwd_bckwd_e;            // control forward/backward data after being stabilized  
-	enum direction_et ctrl_left_right_e;           // control left/right data after being stabilized    
-	enum direction_et raw_ctrl_fwd_bckwd_e;        // control forward/backward data before being stabilized
-	enum direction_et raw_ctrl_left_right_e;       // control left/right data before being stabilized     
-	uint8_t throttle_fwd_bckwd_u8;                 // throttle forward/backward data after being stabilized
-	uint8_t throttle_left_right_u8;                // throttle left/right data after being stabilized
-	uint8_t raw_throttle_fwd_bckwd_u8;             // throttle forward/backward data before being stabilized
-	uint8_t raw_throttle_left_right_u8;            // throttle left/right data before being stabilized       
-	uint8_t throttle_fwd_bckwd_debounce_time_u8;   // throttle forward/backward debounce time
-	uint8_t throttle_left_right_debounce_time_u8;  // throttle left/right debounce time
-	uint8_t ctrl_fwd_bckwd_debounce_time_u8;       // control forward/backward debounce time
-	uint8_t ctrl_left_right_debounce_time_u8;      // control left/right debounce time
+	enum mode_et mode_e_;                           // controller mode
+	enum direction_et ctrl_fwd_bckwd_e_;            // control forward/backward data after being stabilized  
+	enum direction_et ctrl_left_right_e_;           // control left/right data after being stabilized    
+	enum direction_et raw_ctrl_fwd_bckwd_e_;        // control forward/backward data before being stabilized
+	enum direction_et raw_ctrl_left_right_e_;       // control left/right data before being stabilized     
+	uint8_t throttle_fwd_bckwd_;                    // throttle forward/backward data after being stabilized
+	uint8_t throttle_left_right_;                   // throttle left/right data after being stabilized
+	uint8_t raw_throttle_fwd_bckwd_;                // throttle forward/backward data before being stabilized
+	uint8_t raw_throttle_left_right_;               // throttle left/right data before being stabilized       
+	uint8_t throttle_fwd_bckwd_debounce_time_;      // throttle forward/backward debounce time
+	uint8_t throttle_left_right_debounce_time_;     // throttle left/right debounce time
+	uint8_t ctrl_fwd_bckwd_debounce_time_;          // control forward/backward debounce time
+	uint8_t ctrl_left_right_debounce_time_;         // control left/right debounce time
 
 private:
 

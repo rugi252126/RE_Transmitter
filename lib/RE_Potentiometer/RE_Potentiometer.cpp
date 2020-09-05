@@ -14,7 +14,7 @@
 
 
 // Poti pwm constant definition
-static const uint8_t POTI_PWM_u8[POTI_TOTAL_NUMBER_OF_PWM_ELEMENTS_K] =
+static const uint8_t POTI_PWM[POTI_TOTAL_NUMBER_OF_PWM_ELEMENTS_K] =
 {
 	 POTI_10_PERCENT_PWM_K
 	,POTI_20_PERCENT_PWM_K
@@ -29,7 +29,7 @@ static const uint8_t POTI_PWM_u8[POTI_TOTAL_NUMBER_OF_PWM_ELEMENTS_K] =
 };
 
 // Poti ADC limits constant definition
-static const uint16_t POTI_RAW_DATA_u16[POTI_TOTAL_NUMBER_OF_PWM_ELEMENTS_K] =
+static const uint16_t POTI_RAW_DATA[POTI_TOTAL_NUMBER_OF_PWM_ELEMENTS_K] =
 {
 	 POTI_RAW_DATA_TO_10_PERCENT_LIMIT_K
 	,POTI_RAW_DATA_TO_20_PERCENT_LIMIT_K
@@ -44,31 +44,31 @@ static const uint16_t POTI_RAW_DATA_u16[POTI_TOTAL_NUMBER_OF_PWM_ELEMENTS_K] =
 };
 
 
-// CLASS CONSTRUCTORS
+// CLASS CONSTRUCTOR
 // ---------------------------------------------------------------------------
-RE_Poti_cls::RE_Poti_cls()
+Poti::Poti()
 {
 }
 
 // PUBLIC METHODS
 // ---------------------------------------------------------------------------
 // Module initialization
-void RE_Poti_cls::potiF_Init(void)
+void Poti::potiF_Init(void)
 {
     uint8_t idx;
 	
 	for(idx=0u; idx < POTI_TOTAL_NUMBER_K; idx++)
 	{
 		// initialize into default value/state
-	    poti_raw_pwm_data_u8[idx]  = 0u;
-	    poti_pwm_data_u8[idx]      = 0u;
-	    poti_debounce_time_u8[idx] = 0u;
+	    poti_raw_pwm_data_[idx]  = 0u;
+	    poti_pwm_data_[idx]      = 0u;
+	    poti_debounce_time_[idx] = 0u;
 	}	
 }
 
 // ---------------------------------------------------------------------------
 // Cyclic function
-void RE_Poti_cls::potiF_Cyclic(void)
+void Poti::potiF_Cyclic(void)
 {
     uint8_t idx;
 	
@@ -85,7 +85,7 @@ void RE_Poti_cls::potiF_Cyclic(void)
 // PRIVATE METHODS
 // ---------------------------------------------------------------------------
 // Convert raw data into equivalent pwm value
-uint8_t RE_Poti_cls::potiLF_checkEquivalentPwm(uint16_t adc_u16)
+uint8_t Poti::potiLF_checkEquivalentPwm(uint16_t adc_u16)
 {
 	uint8_t idx;
 	uint8_t pwm_u8;
@@ -93,9 +93,9 @@ uint8_t RE_Poti_cls::potiLF_checkEquivalentPwm(uint16_t adc_u16)
 	pwm_u8 = POTI_100_PERCENT_PWM_K;
 	for(idx=0u; idx < POTI_TOTAL_NUMBER_OF_PWM_ELEMENTS_K; idx++)
 	{
-		if(adc_u16 < POTI_RAW_DATA_u16[idx])
+		if(adc_u16 < POTI_RAW_DATA[idx])
 		{
-			pwm_u8 = POTI_PWM_u8[idx];
+			pwm_u8 = POTI_PWM[idx];
 			break;
 		}
 		else
@@ -109,20 +109,20 @@ uint8_t RE_Poti_cls::potiLF_checkEquivalentPwm(uint16_t adc_u16)
 
 // ---------------------------------------------------------------------------
 // Read the ADC value and check the pwm status
-void RE_Poti_cls::potiLF_getAndCheckPotiPwm(uint8_t idx)
+void Poti::potiLF_getAndCheckPotiPwm(uint8_t idx)
 {
 	uint8_t  tmp_u8;
 	uint16_t tmp_u16;
 	
 	// read the ADC from Rte interface
-	tmp_u16 = Rte_cls.Rte_Read_Hal_ADC_Potentiometer1();
+	tmp_u16 = rte_ivar.Rte_Read_Hal_ADC_Potentiometer1();
     // check the equivalent pwm
 	tmp_u8  = potiLF_checkEquivalentPwm(tmp_u16);
     // check if pwm data is changed or not
-	if(tmp_u8 != poti_raw_pwm_data_u8[idx])
+	if(tmp_u8 != poti_raw_pwm_data_[idx])
 	{
-		poti_debounce_time_u8[idx] = 0u;    // reset debounce time because pwm data is changed.
-		poti_raw_pwm_data_u8[idx] = tmp_u8; // stored the new pwm to buffer
+		poti_debounce_time_[idx] = 0u;    // reset debounce time because pwm data is changed.
+		poti_raw_pwm_data_[idx] = tmp_u8; // stored the new pwm to buffer
 	}
 	else
 	{
@@ -132,18 +132,18 @@ void RE_Poti_cls::potiLF_getAndCheckPotiPwm(uint8_t idx)
 
 // ---------------------------------------------------------------------------
 // Stabilize the pwm data
-void RE_Poti_cls::potiLF_stabilizePotiPwm(uint8_t idx)
+void Poti::potiLF_stabilizePotiPwm(uint8_t idx)
 {
     // Make sure the pwm data is the same until debounce time is elapsed.
-	if(poti_debounce_time_u8[idx] >= POTI_KNOB_DEBOUNCE_TIME_K)
+	if(poti_debounce_time_[idx] >= POTI_KNOB_DEBOUNCE_TIME_K)
 	{
         // pwm data is stable. It is safe to use.
-		poti_pwm_data_u8[idx] = poti_raw_pwm_data_u8[idx];
+		poti_pwm_data_[idx] = poti_raw_pwm_data_[idx];
         // Update Rte information as data is already stable.
-		Rte_cls.Rte_Write_Potentiometer_Poti1Data(poti_pwm_data_u8[idx]);
+		rte_ivar.Rte_Write_Potentiometer_Poti1Data(poti_pwm_data_[idx]);
 	}
 	else
 	{
-		poti_debounce_time_u8[idx]++;
+		poti_debounce_time_[idx]++;
 	}
 }	

@@ -40,22 +40,22 @@
 */
 enum menu_switch_state_et
 {
-     MENU_SWITCH_PRESSED_E     = 0
-    ,MENU_SWITCH_NOT_PRESSED_E = 1
+     MENU_SWITCH_PRESSED_E
+    ,MENU_SWITCH_NOT_PRESSED_E
     ,MENU_SWITCH_MAX_E
 };
 
 
-class RE_Menu_cls
+class Menu
 {
 public:
 
     /*!
         @method
-        @abstract RE_Menu abstract constructor
-        @discussion RE_Menu class abstract constructor needed to create the abstract base class.
+        @abstract Menu abstract constructor
+        @discussion Menu class abstract constructor needed to create the abstract base class.
     */
-    RE_Menu_cls();
+    Menu();
 
     /*!
         @function
@@ -89,15 +89,15 @@ public:
 
 protected:
     
-    enum main_menu_et main_menu_e;                        // main menu options
-    enum browse_menu_et browse_menu_e;                    // browse menu options
-    enum menu_switch_state_et menu_switch_browse_state_e; // browse menu switch state(pressed/not pressed) 
-    bool main_menu_status_b;                              // true = inside main menu; false = otherwise
-    bool main_menu_entry_exit_b;                          // mani menu exit status
-    bool browse_menu_status_b;                            // true = inside browse menu; false = otherwise
-    uint8_t browse_menu_ctr_u8;                           // counter to go to the list of browse menu options
-    uint8_t main_menu_ctr_u8;                             // counter to go to the list of main menu options
-    uint16_t main_menu_entry_exit_debounce_time_u16;      // main menu debounce time
+    enum main_menu_et main_menu_e_;                        // main menu options
+    enum browse_menu_et browse_menu_e_;                    // browse menu options
+    enum menu_switch_state_et menu_switch_browse_state_e_; // browse menu switch state(pressed/not pressed) 
+    bool main_menu_status_b_;                              // true = inside main menu; false = otherwise
+    bool main_menu_entry_exit_b_;                          // mani menu exit status
+    bool browse_menu_status_b_;                            // true = inside browse menu; false = otherwise
+    uint8_t browse_menu_ctr_;                              // counter to go to the list of browse menu options
+    uint8_t main_menu_ctr_;                                // counter to go to the list of main menu options
+    uint16_t main_menu_entry_exit_debounce_time_;          // main menu debounce time
 
 private:
 
@@ -153,6 +153,6 @@ private:
         @return none
     */
     void menuLF_updateRteData(void);
-}; // class RE_Menu_cls
+}; // class Menu
 
 #endif // RE_MENU_H_

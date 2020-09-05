@@ -34,16 +34,16 @@
 #define BUZZER_DELAY_TIME_K            (600u/BUZZER_CYCLIC_TIME_K) // 600ms
 
 
-class RE_Buzzer_cls
+class Buzzer
 {
 public:
 
     /*!
         @method
-        @abstract RE_Buzzer abstract constructor.
-        @discussion RE_Buzzer class abstract constructor needed to create the abstract base class.
+        @abstract Buzzer abstract constructor.
+        @discussion Buzzer class abstract constructor needed to create the abstract base class.
 	*/
-	RE_Buzzer_cls();
+	Buzzer();
 
     /*!
         @function
@@ -67,9 +67,9 @@ public:
 
 protected:
     // Internal buzzer variables to control the buzzer behavior
-    enum    digitalPortState_et buzzer_digitalPortState_e; // digital output port status(HIGH/LOW) of the buzzer
-    bool    buzzer_status_b;                               // status when battery voltage is in low condition
-    uint8_t buzzer_delay_u8;                               // time to toggle the buzzer output between HIGH to LOW and vice versa
+    enum    digitalPortState_et buzzer_digitalPortState_e_; // digital output port status(HIGH/LOW) of the buzzer
+    bool    buzzer_status_b_;                               // status when battery voltage is in low condition
+    uint8_t buzzer_delay_;                                  // time to toggle the buzzer output between HIGH to LOW and vice versa
 
 private:
 	/*!
@@ -91,6 +91,6 @@ private:
         @return none
 	*/
 	void buzzerLF_updateRteData(void);    
-}; // class RE_Buzzer_cls
+}; // class Buzzer
 
 #endif // RE_BUZZER_H_

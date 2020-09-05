@@ -28,15 +28,15 @@
 
 
 //! Create object instance 
-RE_Rte_cls               Rte_cls;              // from "RE_Rte" module          
+Rte               rte_ivar;              // from "RE_Rte" module          
 
 //! global variable declarations
 static unsigned long main_previous_task_time_ul = 0u;
 
 
 //! Local funtion prototypes
-static void mainLF_prio_TASK(void);
-static void main_sub_TASK(void   );
+static void mainLF_prio_TASK();
+static void main_sub_TASK();
 
 
 /**
@@ -52,13 +52,13 @@ void setup() {
 #endif // #ifdef MAIN_DEBUG_USED_
 
     // HW Initialization(e.g. IO ports)
-    Rte_cls.rteF_System_Init(HW_INIT_E);    
+    rte_ivar.rteF_System_Init(HW_INIT_E);    
 
     // SW initialization
-    Rte_cls.rteF_System_Init(SW_INIT_E);
+    rte_ivar.rteF_System_Init(SW_INIT_E);
 
     // HW and SW initialization
-    Rte_cls.rteF_System_Init(HW_SW_INIT_E);      
+    rte_ivar.rteF_System_Init(HW_SW_INIT_E);      
 }
 
 /**
@@ -85,14 +85,14 @@ void loop() {
     @param  none
     @return none
 */
-static void mainLF_prio_TASK(void)
+static void mainLF_prio_TASK()
 {//! Read and execute HAL related stuffs
 
     // HAL cyclic function
-    Rte_cls.rteF_RE_Hal_Cyclic();
+    rte_ivar.rteF_RE_Hal_Cyclic();
 
     // SwitchIn cyclic function
-    Rte_cls.rteF_RE_SwitchIn_Cyclic();
+    rte_ivar.rteF_RE_SwitchIn_Cyclic();
 }
 
 
@@ -102,31 +102,31 @@ static void mainLF_prio_TASK(void)
     @param  none
     @return none
 */
-static void main_sub_TASK(void)
+static void main_sub_TASK()
 {
     mainLF_prio_TASK();
 
     // Voltage monitoring cylic function
-    Rte_cls.rteF_RE_VoltageMonitoring_Cyclic();
+    rte_ivar.rteF_RE_VoltageMonitoring_Cyclic();
 
     // Poti cylic function
-    Rte_cls.rteF_RE_Potentiometer_Cyclic();
+    rte_ivar.rteF_RE_Potentiometer_Cyclic();
 
     // JoyStick cylic function
-    Rte_cls.rteF_RE_JoyStick_Cyclic();
+    rte_ivar.rteF_RE_JoyStick_Cyclic();
 
     // Transceiver cylic function
-    Rte_cls.rteF_RE_Transceiver_Cyclic();
+    rte_ivar.rteF_RE_Transceiver_Cyclic();
 
     // Menu cylic function
-    Rte_cls.rteF_RE_Menu_Cyclic();
+    rte_ivar.rteF_RE_Menu_Cyclic();
 
     // LED cylic function
-    Rte_cls.rteF_RE_Led_Cyclic();
+    rte_ivar.rteF_RE_Led_Cyclic();
 
     // Buzzer cylic function
-    Rte_cls.rteF_RE_Buzzer_Cyclic();
+    rte_ivar.rteF_RE_Buzzer_Cyclic();
 
     // LCD cylic function
-    Rte_cls.rteF_RE_Lcd_Cyclic();
+    rte_ivar.rteF_RE_Lcd_Cyclic();
 }

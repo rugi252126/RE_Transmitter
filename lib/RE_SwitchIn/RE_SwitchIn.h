@@ -45,16 +45,16 @@ enum switchIn_et
 };
 
 
-class RE_SwitchIn_cls
+class SwitchIn
 {
 public:
     
 	/*!
         @method
-        @abstract RE_SwitchIn abstract constructor
-        @discussion RE_SwitchIn class abstract constructor needed to create the abstract base class.
+        @abstract SwitchIn abstract constructor
+        @discussion SwitchIn class abstract constructor needed to create the abstract base class.
 	*/
-    RE_SwitchIn_cls( );
+    SwitchIn( );
 
 	/*!
         @function
@@ -78,10 +78,10 @@ public:
 
 protected:
     
-    bool rte_read_switchState_b[SWITCHIN_NUM_K];        // data read from Rte
-    bool switch_state_b[SWITCHIN_NUM_K];                // stabilized switch state
-    bool switch_state_raw_b[SWITCHIN_NUM_K];            // raw switch state
-    uint16_t switch_debounce_time_u16[SWITCHIN_NUM_K];  // debounce time to stabilize the switches   
+    bool rte_read_switchState_b_[SWITCHIN_NUM_K];        // data read from Rte
+    bool switch_state_b_[SWITCHIN_NUM_K];                // stabilized switch state
+    bool switch_state_raw_b_[SWITCHIN_NUM_K];            // raw switch state
+    uint16_t switch_debounce_time_[SWITCHIN_NUM_K];      // debounce time to stabilize the switches   
  
 
 private:
@@ -128,6 +128,6 @@ private:
         @return none
     */
     void switchInLF_updateRteData(void);    
-}; // end of class RE_SwitchIn_cls
+}; // end of class SwitchIn
 
 #endif // RE_SWITCHIN_H_

@@ -48,16 +48,17 @@
 #define POTI_100_PERCENT_PWM_K                  100u                       // 100% pwm
 #define POTI_RAW_DATA_TO_100_PERCENT_LIMIT_K    1000u                      // 100% ADC limit
 
-class RE_Poti_cls
+
+class Poti
 {
 public:
 
 	/*!
         @method
-        @abstract RE_Potentiometer abstract constructor
-        @discussion RE_Potentiometer class abstract constructor needed to create the abstract base class.
+        @abstract Poti abstract constructor
+        @discussion Poti class abstract constructor needed to create the abstract base class.
 	*/
-	RE_Poti_cls(); 
+	Poti(); 
 
 	/*!
         @function
@@ -81,9 +82,9 @@ public:
 
 protected:
 
-    uint8_t poti_raw_pwm_data_u8[POTI_TOTAL_NUMBER_K];  // raw pwm data
-	uint8_t poti_pwm_data_u8[POTI_TOTAL_NUMBER_K];      // stabilized pwm data
-	uint8_t poti_debounce_time_u8[POTI_TOTAL_NUMBER_K]; // debounce time to stabilize the raw data
+    uint8_t poti_raw_pwm_data_[POTI_TOTAL_NUMBER_K];  // raw pwm data
+	uint8_t poti_pwm_data_[POTI_TOTAL_NUMBER_K];      // stabilized pwm data
+	uint8_t poti_debounce_time_[POTI_TOTAL_NUMBER_K]; // debounce time to stabilize the raw data
 
 private:
 

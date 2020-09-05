@@ -38,16 +38,16 @@
 #define TRANSCEIVER_CE_K                7 // D07
 
 
-class RE_Transceiver_cls
+class Transceiver
 {
 public:
 
     /*!
         @method
-        @abstract RE_Transceiver abstract constructor
-        @discussion RE_Transceiver class abstract constructor needed to create the abstract base class.
+        @abstract Transceiver abstract constructor
+        @discussion Transceiver class abstract constructor needed to create the abstract base class.
     */
-    RE_Transceiver_cls();
+    Transceiver();
 
     /*!
         @function
@@ -71,21 +71,21 @@ public:
 
 protected:
     
-    bool    txrx_status_b;   // radio status
-    uint8_t timeout_ctr_u8;  // radio timeout counter
+    bool    txrx_status_b_;   // radio status
+    uint8_t timeout_ctr_;     // radio timeout counter
 
     // data to be transmitted
     struct tx_data_st
     {
-        byte joystick_throttle_fwd_bckwd_u8;   // contains the pwm for throttle forward/backward
-        byte joystick_throttle_left_right_u8;  // contains the pwm for throttle left/right
-        byte joystick_ctrl_fwd_bckwd_u8;       // contains the direction(e.g. forward, backward, neutral)
-        byte joystick_ctrl_left_right_u8;      // contains the direction(e.g. left-turn, right-turn, neutral)
-        byte potentiometer1_u8;                // poti pwm value
-        byte switch1_u8;                       // contains ON/OFF switch information
-        byte switch2_u8;                       // contains ON/OFF switch information
-        byte switch3_u8;                       // contains ON/OFF switch information
-        byte switch4_u8;                       // contains ON/OFF switch information
+        byte joystick_throttle_fwd_bckwd_;   // contains the pwm for throttle forward/backward
+        byte joystick_throttle_left_right_;  // contains the pwm for throttle left/right
+        byte joystick_ctrl_fwd_bckwd_;       // contains the direction(e.g. forward, backward, neutral)
+        byte joystick_ctrl_left_right_;      // contains the direction(e.g. left-turn, right-turn, neutral)
+        byte potentiometer1_;                // poti pwm value
+        byte switch1_;                       // contains ON/OFF switch information
+        byte switch2_;                       // contains ON/OFF switch information
+        byte switch3_;                       // contains ON/OFF switch information
+        byte switch4_;                       // contains ON/OFF switch information
     };
     struct tx_data_st tx_data_s;
 
@@ -133,6 +133,6 @@ private:
     */
     //void transceiverLF_Receive(void);
 
-}; // class RE_Transceiver_cls
+}; // class Transceiver
 
 #endif // RE_TRANSCEIVER_H_

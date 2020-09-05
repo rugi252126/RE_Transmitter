@@ -32,16 +32,16 @@
 */
 #define LED_BLINK_DELAY_TIME_K    (600u/LED_CYCLIC_TIME_K)  // 600ms
 
-class RE_Led_cls
+class LedIndicator
 {
 public:
 
     /*!
         @method
-        @abstract RE_Led abstract constructor
-        @discussion RE_Led class abstract constructor needed to create the abstract base class.
+        @abstract LedIndicator abstract constructor
+        @discussion LedIndicator class abstract constructor needed to create the abstract base class.
     */
-	RE_Led_cls();
+	LedIndicator();
 
     /*!
         @function
@@ -65,9 +65,9 @@ public:
 
 protected:
 
-    bool    led_status_b;          // either LED is ON/OFF
-    bool    transceiver_status_b;  // either connection is okay or not.
-    uint8_t led_blink_delay_u8;    // delay time between LED ON->OFF and vice versa
+    bool    led_status_b_;          // either LED is ON/OFF
+    bool    transceiver_status_b_;  // either connection is okay or not.
+    uint8_t led_blink_delay_;       // delay time between LED ON->OFF and vice versa
 
 private:
     

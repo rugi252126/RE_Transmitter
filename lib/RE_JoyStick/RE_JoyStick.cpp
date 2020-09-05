@@ -45,84 +45,84 @@ static const uint16_t joyStick_throttle_raw_data[JS_TOTAL_NUMBER_OF_PWM_ELEMENTS
 
 // CLASS CONSTRUCTORS
 // ---------------------------------------------------------------------------
-RE_JoyStick_cls::RE_JoyStick_cls()
+JoyStick::JoyStick()
 {
 }
 
 // ---------------------------------------------------------------------------
-// Set the controller mode during instance creation. Default mode is Mode2.
-RE_JoyStick_cls::RE_JoyStick_cls(enum mode_et setMode_e)
+// Set the controller mode during instance creation. 
+JoyStick::JoyStick(enum mode_et setMode_e)
 {
-	mode_e = setMode_e;
+	mode_e_ = setMode_e;
 	// Update Rte interface
-	Rte_cls.Rte_Write_JoyStick_ControllerMode(mode_e); 		
+	rte_ivar.Rte_Write_JoyStick_ControllerMode(mode_e_); 		
 }
 
 // PUBLIC METHODS
 // ---------------------------------------------------------------------------
 // Module initialization	
-void RE_JoyStick_cls::joyStickF_init(void)
+void JoyStick::joyStickF_init(void)
 {
-	mode_e = MODE2_E;
-	ctrl_fwd_bckwd_e = JS_OFF_E;
-	ctrl_left_right_e = JS_OFF_E;
-	raw_ctrl_fwd_bckwd_e = JS_OFF_E;
-	raw_ctrl_left_right_e = JS_OFF_E;
-	throttle_fwd_bckwd_u8 = 0u;
-	throttle_left_right_u8 = 0u;
-	raw_throttle_fwd_bckwd_u8 = 0u;
-	raw_throttle_left_right_u8 = 0u;
-	throttle_fwd_bckwd_debounce_time_u8 = 0u;
-	throttle_left_right_debounce_time_u8 = 0u;
-	ctrl_fwd_bckwd_debounce_time_u8 = 0u;
-	ctrl_left_right_debounce_time_u8 = 0u;
+	mode_e_ = MODE2_E;
+	ctrl_fwd_bckwd_e_ = JS_OFF_E;
+	ctrl_left_right_e_ = JS_OFF_E;
+	raw_ctrl_fwd_bckwd_e_ = JS_OFF_E;
+	raw_ctrl_left_right_e_ = JS_OFF_E;
+	throttle_fwd_bckwd_ = 0u;
+	throttle_left_right_ = 0u;
+	raw_throttle_fwd_bckwd_ = 0u;
+	raw_throttle_left_right_ = 0u;
+	throttle_fwd_bckwd_debounce_time_ = 0u;
+	throttle_left_right_debounce_time_ = 0u;
+	ctrl_fwd_bckwd_debounce_time_ = 0u;
+	ctrl_left_right_debounce_time_ = 0u;
 }
 
 // ---------------------------------------------------------------------------
 // Function to set the controller mode(mode1 or mode2).
-void RE_JoyStick_cls::joyStickF_setMode(enum mode_et setMode_e)
+void JoyStick::joyStickF_setMode(enum mode_et setMode_e)
 {
-    mode_e = setMode_e;
+    mode_e_ = setMode_e;
 }
 
 // ---------------------------------------------------------------------------
 // Returns controller mode(mode1 or mode2).
-enum mode_et RE_JoyStick_cls::joyStickF_getMode(void)
+enum mode_et JoyStick::joyStickF_getMode(void)
 {
-    return(mode_e);
+    return(mode_e_);
 }
 
 // ---------------------------------------------------------------------------
 // Returns throttle forward/backward data
-uint8_t RE_JoyStick_cls::joyStickF_getThrottleFwdBckwd(void)
+uint8_t JoyStick::joyStickF_getThrottleFwdBckwd(void)
 {
-	return(throttle_fwd_bckwd_u8);
+	return(throttle_fwd_bckwd_);
 }
 
 // ---------------------------------------------------------------------------
 // Returns throttle left/right data
-uint8_t RE_JoyStick_cls::joyStickF_getThrottleLeftRight(void)
+uint8_t JoyStick::joyStickF_getThrottleLeftRight(void)
 {
-	return(throttle_left_right_u8);
+	return(throttle_left_right_);
 }
 
 // ---------------------------------------------------------------------------
 // Returns forward, backward or no movement
-enum direction_et RE_JoyStick_cls::joyStickF_getControlFwdBckwd(void)
+enum direction_et JoyStick::joyStickF_getControlFwdBckwd(void)
 {
-	return(ctrl_fwd_bckwd_e);
+	return(ctrl_fwd_bckwd_e_);
 }
 
 // ---------------------------------------------------------------------------
 // Returns left turn, Right turn or no movement
-enum direction_et RE_JoyStick_cls::joyStickF_getControlLeftRight(void)
+enum direction_et JoyStick::joyStickF_getControlLeftRight(void)
 {
-	return(ctrl_left_right_e);
+	return(ctrl_left_right_e_);
 }
 
 // ---------------------------------------------------------------------------
 // Cyclic function
-void RE_JoyStick_cls::joyStickF_Cyclic(void)
+void JoyStick::joyStickF_Cyclic(void)
 {
     // Get, check and process all joysticks
 	joyStickLF_getAllControlSticksStatus();
@@ -134,7 +134,7 @@ void RE_JoyStick_cls::joyStickF_Cyclic(void)
 // PRIVATE METHODS
 // ---------------------------------------------------------------------------
 // Convert raw data into equivalent pwm value
-uint8_t RE_JoyStick_cls::joyStickLF_checkEquivalentPwm(uint16_t pwm_u16)
+uint8_t JoyStick::joyStickLF_checkEquivalentPwm(uint16_t pwm_u16)
 {
 	uint8_t idx;
 	uint8_t pwm_u8;
@@ -159,7 +159,7 @@ uint8_t RE_JoyStick_cls::joyStickLF_checkEquivalentPwm(uint16_t pwm_u16)
 
 // ---------------------------------------------------------------------------
 // Contains general information for forward/backward or left turn/right turn
-uint8_t RE_JoyStick_cls::joyStickLF_checkControlDirection(uint16_t pwm_u16)
+uint8_t JoyStick::joyStickLF_checkControlDirection(uint16_t pwm_u16)
 {
 	uint8_t direction_u8 = 0u;
 	
@@ -181,7 +181,7 @@ uint8_t RE_JoyStick_cls::joyStickLF_checkControlDirection(uint16_t pwm_u16)
 
 // ---------------------------------------------------------------------------
 // Contains specific information for forward/backward or left turn/right turn
-enum direction_et RE_JoyStick_cls::joyStickLF_checkControlStick(uint8_t index_u8, uint16_t pwm_u16)
+enum direction_et JoyStick::joyStickLF_checkControlStick(uint8_t index_u8, uint16_t pwm_u16)
 {
 	uint8_t dir_u8;
 	enum direction_et direction_e;
@@ -232,128 +232,128 @@ enum direction_et RE_JoyStick_cls::joyStickLF_checkControlStick(uint8_t index_u8
 
 // ---------------------------------------------------------------------------
 // Get, check and process all joysticks
-void RE_JoyStick_cls::joyStickLF_getAllControlSticksStatus(void)
+void JoyStick::joyStickLF_getAllControlSticksStatus(void)
 {
 	uint8_t tmp_raw_dir_u8;
 	uint16_t tmp_raw_data_u16;
 	enum direction_et  tmp_raw_dir_e;
 	
 	
-	if(MODE2_E == mode_e)
+	if(MODE2_E == mode_e_)
 	{
-		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_LeftJoyStick_FwdBckwrd();
+		tmp_raw_data_u16 = rte_ivar.Rte_Read_Hal_ADC_LeftJoyStick_FwdBckwrd();
 		tmp_raw_dir_u8 = joyStickLF_checkEquivalentPwm(tmp_raw_data_u16);
-		if(raw_throttle_fwd_bckwd_u8 != tmp_raw_dir_u8)
+		if(raw_throttle_fwd_bckwd_ != tmp_raw_dir_u8)
 		{
-			throttle_fwd_bckwd_debounce_time_u8 = 0u;
-			raw_throttle_fwd_bckwd_u8 = tmp_raw_dir_u8;
+			throttle_fwd_bckwd_debounce_time_ = 0u;
+			raw_throttle_fwd_bckwd_ = tmp_raw_dir_u8;
 		}else{/* no action */}
 			
-		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_LeftJoyStick_LeftRight();
+		tmp_raw_data_u16 = rte_ivar.Rte_Read_Hal_ADC_LeftJoyStick_LeftRight();
 		tmp_raw_dir_u8 = joyStickLF_checkEquivalentPwm(tmp_raw_data_u16);
-		if(raw_throttle_left_right_u8 != tmp_raw_dir_u8)
+		if(raw_throttle_left_right_ != tmp_raw_dir_u8)
 		{
-			throttle_left_right_debounce_time_u8 = 0u;
-			raw_throttle_left_right_u8 = tmp_raw_dir_u8;
+			throttle_left_right_debounce_time_ = 0u;
+			raw_throttle_left_right_ = tmp_raw_dir_u8;
 		}else{/* no action */}
 			
-		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_RightJoyStick_FwdBckwrd();
+		tmp_raw_data_u16 = rte_ivar.Rte_Read_Hal_ADC_RightJoyStick_FwdBckwrd();
 		tmp_raw_dir_e = joyStickLF_checkControlStick(0u, tmp_raw_data_u16);
-		if(raw_ctrl_fwd_bckwd_e != tmp_raw_dir_e)
+		if(raw_ctrl_fwd_bckwd_e_ != tmp_raw_dir_e)
 		{
-			ctrl_fwd_bckwd_debounce_time_u8 = 0u;
-			raw_ctrl_fwd_bckwd_e = tmp_raw_dir_e;
+			ctrl_fwd_bckwd_debounce_time_ = 0u;
+			raw_ctrl_fwd_bckwd_e_ = tmp_raw_dir_e;
 		}else{/* no action */}
 			
-		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_RightJoyStick_LeftRight();
+		tmp_raw_data_u16 = rte_ivar.Rte_Read_Hal_ADC_RightJoyStick_LeftRight();
 		tmp_raw_dir_e = joyStickLF_checkControlStick(1u, tmp_raw_data_u16);
-		if(raw_ctrl_left_right_e != tmp_raw_dir_e)
+		if(raw_ctrl_left_right_e_ != tmp_raw_dir_e)
 		{
-			ctrl_left_right_debounce_time_u8 = 0u;
-			raw_ctrl_left_right_e = tmp_raw_dir_e;
+			ctrl_left_right_debounce_time_ = 0u;
+			raw_ctrl_left_right_e_ = tmp_raw_dir_e;
 		}else{/* no action */}
 	}
 	else
 	{
-		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_RightJoyStick_FwdBckwrd();
+		tmp_raw_data_u16 = rte_ivar.Rte_Read_Hal_ADC_RightJoyStick_FwdBckwrd();
 		tmp_raw_dir_u8 = joyStickLF_checkEquivalentPwm(tmp_raw_data_u16);
-		if(raw_throttle_fwd_bckwd_u8 != tmp_raw_dir_u8)
+		if(raw_throttle_fwd_bckwd_ != tmp_raw_dir_u8)
 		{
-			throttle_fwd_bckwd_debounce_time_u8 = 0u;
-			raw_throttle_fwd_bckwd_u8 = tmp_raw_dir_u8;
+			throttle_fwd_bckwd_debounce_time_ = 0u;
+			raw_throttle_fwd_bckwd_ = tmp_raw_dir_u8;
 		}else{/* no action */}
 			
-		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_RightJoyStick_LeftRight();
+		tmp_raw_data_u16 = rte_ivar.Rte_Read_Hal_ADC_RightJoyStick_LeftRight();
 		tmp_raw_dir_u8 = joyStickLF_checkEquivalentPwm(tmp_raw_data_u16);
-		if(raw_throttle_left_right_u8 != tmp_raw_dir_u8)
+		if(raw_throttle_left_right_ != tmp_raw_dir_u8)
 		{
-			throttle_left_right_debounce_time_u8 = 0u;
-			raw_throttle_left_right_u8 = tmp_raw_dir_u8;
+			throttle_left_right_debounce_time_ = 0u;
+			raw_throttle_left_right_ = tmp_raw_dir_u8;
 		}else{/* no action */}
 			
-		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_LeftJoyStick_FwdBckwrd();
+		tmp_raw_data_u16 = rte_ivar.Rte_Read_Hal_ADC_LeftJoyStick_FwdBckwrd();
 		tmp_raw_dir_e = joyStickLF_checkControlStick(0u, tmp_raw_data_u16);
-		if(raw_ctrl_fwd_bckwd_e != tmp_raw_dir_e)
+		if(raw_ctrl_fwd_bckwd_e_ != tmp_raw_dir_e)
 		{
-			ctrl_fwd_bckwd_debounce_time_u8 = 0u;
-			raw_ctrl_fwd_bckwd_e = tmp_raw_dir_e;
+			ctrl_fwd_bckwd_debounce_time_ = 0u;
+			raw_ctrl_fwd_bckwd_e_ = tmp_raw_dir_e;
 		}else{/* no action */}
 			
-		tmp_raw_data_u16 = Rte_cls.Rte_Read_Hal_ADC_LeftJoyStick_LeftRight();
+		tmp_raw_data_u16 = rte_ivar.Rte_Read_Hal_ADC_LeftJoyStick_LeftRight();
 		tmp_raw_dir_e = joyStickLF_checkControlStick(1u, tmp_raw_data_u16);
-		if(raw_ctrl_left_right_e != tmp_raw_dir_e)
+		if(raw_ctrl_left_right_e_ != tmp_raw_dir_e)
 		{
-			ctrl_left_right_debounce_time_u8 = 0u;
-			raw_ctrl_left_right_e = tmp_raw_dir_e;
+			ctrl_left_right_debounce_time_ = 0u;
+			raw_ctrl_left_right_e_ = tmp_raw_dir_e;
 		}else{/* no action */}		
 	}
 }
 
 // ---------------------------------------------------------------------------
 // Stabilize the data and update RTE interfaces
-void RE_JoyStick_cls::joyStickLF_stabilizeAllControlSticksStatus(void)
+void JoyStick::joyStickLF_stabilizeAllControlSticksStatus(void)
 {
-	if(throttle_fwd_bckwd_debounce_time_u8 >= JS_THROTTLE_DEBOUNCE_TIME_K)
+	if(throttle_fwd_bckwd_debounce_time_ >= JS_THROTTLE_DEBOUNCE_TIME_K)
 	{
-		throttle_fwd_bckwd_u8 = raw_throttle_fwd_bckwd_u8;
+		throttle_fwd_bckwd_ = raw_throttle_fwd_bckwd_;
 		// Update Rte interface
-		Rte_cls.Rte_Write_JoyStick_ThrottleFwdBckwrd(throttle_fwd_bckwd_u8); 
+		rte_ivar.Rte_Write_JoyStick_ThrottleFwdBckwrd(throttle_fwd_bckwd_); 
 	}
 	else
 	{
-		throttle_fwd_bckwd_debounce_time_u8++;
+		throttle_fwd_bckwd_debounce_time_++;
 	}
 	
-	if(throttle_left_right_debounce_time_u8 >= JS_THROTTLE_DEBOUNCE_TIME_K)
+	if(throttle_left_right_debounce_time_ >= JS_THROTTLE_DEBOUNCE_TIME_K)
 	{
-		throttle_left_right_u8 = raw_throttle_left_right_u8;
+		throttle_left_right_ = raw_throttle_left_right_;
 		// Update Rte interface
-		Rte_cls.Rte_Write_JoyStick_ThrottleLeftRight(throttle_left_right_u8); 		
+		rte_ivar.Rte_Write_JoyStick_ThrottleLeftRight(throttle_left_right_); 		
 	}
 	else
 	{
-		throttle_left_right_debounce_time_u8++;
+		throttle_left_right_debounce_time_++;
 	}	
 
-	if(ctrl_fwd_bckwd_debounce_time_u8 >= JS_CONTROL_DEBOUNCE_TIME_K)
+	if(ctrl_fwd_bckwd_debounce_time_ >= JS_CONTROL_DEBOUNCE_TIME_K)
 	{
-		ctrl_fwd_bckwd_e = raw_ctrl_fwd_bckwd_e;
+		ctrl_fwd_bckwd_e_ = raw_ctrl_fwd_bckwd_e_;
 		// Update Rte interface
-		Rte_cls.Rte_Write_JoyStick_ControlFwdBckwrd(ctrl_fwd_bckwd_e); 			
+		rte_ivar.Rte_Write_JoyStick_ControlFwdBckwrd(ctrl_fwd_bckwd_e_); 			
 	}
 	else
 	{
-		ctrl_fwd_bckwd_debounce_time_u8++;
+		ctrl_fwd_bckwd_debounce_time_++;
 	}
 	
-	if(ctrl_left_right_debounce_time_u8 >= JS_CONTROL_DEBOUNCE_TIME_K)
+	if(ctrl_left_right_debounce_time_ >= JS_CONTROL_DEBOUNCE_TIME_K)
 	{
-		ctrl_left_right_e = raw_ctrl_left_right_e;
+		ctrl_left_right_e_ = raw_ctrl_left_right_e_;
 		// Update Rte interface
-		Rte_cls.Rte_Write_JoyStick_ControlLeftRight(ctrl_left_right_e); 		
+		rte_ivar.Rte_Write_JoyStick_ControlLeftRight(ctrl_left_right_e_); 		
 	}
 	else
 	{
-		ctrl_left_right_debounce_time_u8++;
+		ctrl_left_right_debounce_time_++;
 	}		
 }

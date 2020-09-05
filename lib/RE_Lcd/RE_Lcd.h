@@ -30,16 +30,16 @@
 #define LCD_DISPLAY_REFRESH_TIME_K    (1000u/LCD_CYCLIC_TIME_K)    // 1sec. time to refresh the display info. within the same state
 
 
-class RE_Lcd_cls
+class LcdDisplay
 {
 public:
 
     /*!
         @method
-        @abstract RE_Lcd abstract constructor
-        @discussion RE_Lcd class abstract constructor needed to create the abstract base class.
+        @abstract LcdDisplay abstract constructor
+        @discussion LcdDisplay class abstract constructor needed to create the abstract base class.
     */
-    RE_Lcd_cls();
+    LcdDisplay();
 
     /*!
         @function
@@ -64,8 +64,8 @@ public:
 
 protected:
     
-    uint8_t           diplay_refresh_time_u8; // time to refresh the display info. within the same state
-    enum browse_menu_et   copy_browse_menu_e; // holds the browse menu current state
+    uint8_t           diplay_refresh_time_;    // time to refresh the display info. within the same state
+    enum browse_menu_et   copy_browse_menu_e_; // holds the browse menu current state
 
 private:
 
@@ -159,7 +159,7 @@ private:
     */
     //void lcdLF_mainMenuDisplay(void);
 
-}; // class RE_Lcd_cls
+}; // class LcdDisplay
 
 
 #endif // RE_LCD_H_

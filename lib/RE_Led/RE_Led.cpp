@@ -14,25 +14,25 @@
 #include "RE_Led.h"
 
  
-// CLASS CONSTRUCTORS
+// CLASS CONSTRUCTOR
 // ---------------------------------------------------------------------------
-RE_Led_cls::RE_Led_cls()
+LedIndicator::LedIndicator()
 {	
 }
 
 // PUBLIC METHODS
 // ---------------------------------------------------------------------------
 // Module initialization
-void RE_Led_cls::ledF_Init(void)
+void LedIndicator::ledF_Init(void)
 {
-    led_status_b = false;
-    transceiver_status_b = false;
-    led_blink_delay_u8 = 0u;	
+    led_status_b_ = false;
+    transceiver_status_b_ = false;
+    led_blink_delay_ = 0u;	
 }
 
 // ---------------------------------------------------------------------------
 // Cyclic function
-void RE_Led_cls::ledF_Cyclic(void)
+void LedIndicator::ledF_Cyclic(void)
 {
 	// Read transceiver status
 	ledLF_getTransceiverStatus();
@@ -44,58 +44,57 @@ void RE_Led_cls::ledF_Cyclic(void)
 // PRIVATE METHODS
 // ---------------------------------------------------------------------------
 // Read the transceiver status
-void RE_Led_cls::ledLF_getTransceiverStatus(void)
+void LedIndicator::ledLF_getTransceiverStatus(void)
 {
 	bool tmp_stat_b;
 
-	tmp_stat_b = Rte_cls.Rte_Read_Transceiver_Status();
+	tmp_stat_b = rte_ivar.Rte_Read_Transceiver_Status();
 	if(tmp_stat_b != false)
 	{ //! Connection is established.
-		transceiver_status_b = true;
+		transceiver_status_b_ = true;
 	}
 	else
 	{ //! Connection is not established.
-		transceiver_status_b = false;
+		transceiver_status_b_ = false;
 	}
 }
 
 // ---------------------------------------------------------------------------
  // Either LED is permanently ON(connection is established) or LED is blinking(connection is not established).
-void RE_Led_cls::ledLF_applyLedBehavior(void)
+void LedIndicator::ledLF_applyLedBehavior(void)
 {
-	if (transceiver_status_b != true)
+	if (transceiver_status_b_ != true)
 	{ //! Connection is not established. Blink the LED indicator.
-		if (led_status_b != false)
+		if (led_status_b_ != false)
 		{
-            if (led_blink_delay_u8 >= LED_BLINK_DELAY_TIME_K)
+            if (led_blink_delay_ >= LED_BLINK_DELAY_TIME_K)
 			{
-				led_status_b = false;    // transition from LED OFF to LED ON.
-				led_blink_delay_u8 = 0u; // reset the delay time
+				led_status_b_ = false;    // transition from LED OFF to LED ON.
+				led_blink_delay_ = 0u; // reset the delay time
 			}
 			else
 			{
-				led_blink_delay_u8++;
-				Rte_cls.Rte_Write_Hal_DO_LedIndicator(HAL_IO_LOW_E);
+				led_blink_delay_++;
+				rte_ivar.Rte_Write_Hal_DO_LedIndicator(HAL_IO_LOW_E);
 			}
 		}			
         else
         {
-            if (led_blink_delay_u8 >= LED_BLINK_DELAY_TIME_K)
+            if (led_blink_delay_ >= LED_BLINK_DELAY_TIME_K)
 			{
-				led_status_b = true;     // transition from LED ON to LED OFF.
-				led_blink_delay_u8 = 0u; // reset the delay time
+				led_status_b_ = true;     // transition from LED ON to LED OFF.
+				led_blink_delay_ = 0u; // reset the delay time
 			}
 			else
 			{
-				led_blink_delay_u8++;
-				Rte_cls.Rte_Write_Hal_DO_LedIndicator(HAL_IO_HIGH_E);
+				led_blink_delay_++;
+				rte_ivar.Rte_Write_Hal_DO_LedIndicator(HAL_IO_HIGH_E);
 			}
         }	
 	}
 	else
 	{ //! Connection is established. Keep the LED indicator always ON.
-        led_status_b = true; // LED is ON.
-		Rte_cls.Rte_Write_Hal_DO_LedIndicator(HAL_IO_HIGH_E);
-		//RTE_Write_LedState_e = HAL_IO_HIGH_E; // hal_led_cls.halF_setDO_State(HAL_DO_LED_IND_E,HAL_IO_HIGH_E);
+        led_status_b_ = true; // LED is ON.
+		rte_ivar.Rte_Write_Hal_DO_LedIndicator(HAL_IO_HIGH_E);
 	}
 }
