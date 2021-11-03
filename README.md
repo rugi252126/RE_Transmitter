@@ -13,3 +13,14 @@ How to build the software
     1) Clone this project to your environment
     2) Install platformIO IDE or integrate it from Visual Studio Code(the most easiest way)
 	3) From Visual Studio Code, you can compile the software. You can also upload the firmware to the microcontroller. Debugging using serial monitor is also possible.
+
+
+![Actual Photo1](https://github.com/rugi252126/RE_Transmitter/blob/master/Descriptions/Prototype/RE_14.JPG?raw=true)
+
+![Actual Photo2](https://github.com/rugi252126/RE_Transmitter/blob/master/Descriptions/Prototype/RE_15.JPG?raw=true)
+
+![Actual Photo3](https://github.com/rugi252126/RE_Transmitter/blob/master/Descriptions/Prototype/RE_17.JPG?raw=true)
+
+![Actual Photo4](https://github.com/rugi252126/RE_Transmitter/blob/master/Descriptions/Prototype/RE_18.JPG?raw=true)
+
+![Actual Photo5](https://github.com/rugi252126/RE_Transmitter/blob/master/Descriptions/Prototype/RE_20.JPG?raw=true)
